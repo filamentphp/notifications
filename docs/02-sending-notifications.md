@@ -2,6 +2,8 @@
 title: Sending notifications
 ---
 
+> To start, make sure the package is [installed](installation) - `@livewire('notifications')` should be in your Blade layout somewhere.
+
 Notifications are sent using a `Notification` object that's constructed through a fluent API. Calling the `send()` method on the `Notification` object will dispatch the notification and display it in your application. As the session is used to flash notifications, they can be sent from anywhere in your code, not just Livewire components.
 
 ```php
@@ -26,6 +28,8 @@ class EditPost extends Component
 }
 ```
 
+![Notification](https://user-images.githubusercontent.com/44533235/180995786-c9d6ac68-959a-45d2-8f05-e09ff2b9abd9.png)
+
 ## Title
 
 The main message of the notification is shown in the title. You can set the title as follows:
@@ -34,7 +38,8 @@ The main message of the notification is shown in the title. You can set the titl
 use Filament\Notifications\Notification;
 
 Notification::make()
-    ->title('Saved successfully'); // [tl! focus]
+    ->title('Saved successfully') // [tl! focus]
+    ->send();
 ```
 
 Markdown text will automatically be rendered if passed to the title.
@@ -48,9 +53,12 @@ use Filament\Notifications\Notification;
 
 Notification::make()
     ->title('Saved successfully')
-    ->icon('heroicon-o-check-circle') // [tl! focus:start]
-    ->iconColor('success'); // [tl! focus:end]
+    ->icon('heroicon-o-document-text') // [tl! focus:start]
+    ->iconColor('success') // [tl! focus:end]
+    ->send();
 ```
+
+![Notification with icon](https://user-images.githubusercontent.com/44533235/180996863-1eee77fb-2504-4d70-972d-d120bef631dc.png)
 
 Notifications often have a status like `success`, `warning` or `danger`. Instead of manually setting the corresponding icons and colors, there's a `status()` method which you can pass the status. You may also use the dedicated `success()`, `warning()` and `danger()` methods instead. So, cleaning up the above example would look like this:
 
@@ -59,8 +67,11 @@ use Filament\Notifications\Notification;
 
 Notification::make()
     ->title('Saved successfully')
-    ->success(); // [tl! focus]
+    ->success() // [tl! focus]
+    ->send();
 ```
+
+![Success, warning and danger notifications](https://user-images.githubusercontent.com/44533235/180995801-3e706ca6-773b-47a0-9fc6-3e28900a9ea9.png)
 
 ## Duration
 
@@ -72,7 +83,8 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->duration(5000); // [tl! focus]
+    ->duration(5000) // [tl! focus]
+    ->send();
 ```
 
 If you prefer setting a duration in seconds instead of milliseconds, you can do so:
@@ -83,7 +95,8 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->seconds(5); // [tl! focus]
+    ->seconds(5) // [tl! focus]
+    ->send();
 ```
 
 You might want some notifications to not automatically close and require the user to close them manually. This can be achieved by making the notification persistent:
@@ -94,7 +107,8 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->persistent(); // [tl! focus]
+    ->persistent() // [tl! focus]
+    ->send();
 ```
 
 ## Body
@@ -107,8 +121,11 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the **post** have been saved.'); // [tl! focus]
+    ->body('Changes to the **post** have been saved.') // [tl! focus]
+    ->send();
 ```
+
+![Notification with Markdown body](https://user-images.githubusercontent.com/44533235/180995813-ce93e747-0f66-4fc5-becb-7e535fb80e46.png)
 
 ## Actions
 
@@ -116,7 +133,7 @@ Notifications support actions that render a button or link which may open a URL 
 
 ```php
 use Filament\Notifications\Actions\Action; // [tl! focus]
-use Filament\Notifications\Notification; // [tl! focus]
+use Filament\Notifications\Notification;
 
 Notification::make()
     ->title('Saved successfully')
@@ -126,9 +143,12 @@ Notification::make()
         Action::make('view')
             ->button(),
         Action::make('undo')
-            ->color('danger'),
-    ]); // [tl! focus:end]
+            ->color('secondary'),
+    ]) // [tl! focus:end]
+    ->send();
 ```
+
+![Notification with actions](https://user-images.githubusercontent.com/44533235/180995819-ed5c78fa-b567-4bc6-9e5c-64fe615c4360.png)
 
 ### Opening URLs
 
@@ -147,8 +167,9 @@ Notification::make()
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true) // [tl! focus]
         Action::make('undo')
-            ->color('danger'),
-    ]);
+            ->color('secondary'),
+    ])
+    ->send();
 ```
 
 ### Emitting events
@@ -168,9 +189,10 @@ Notification::make()
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true),
         Action::make('undo')
-            ->color('danger')
+            ->color('secondary')
             ->emit('undoEditingPost', [$post->id]), // [tl! focus]
-    ]);
+    ])
+    ->send();
 ```
 
 ### Closing notifications
@@ -190,8 +212,9 @@ Notification::make()
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true),
         Action::make('undo')
-            ->color('danger')
+            ->color('secondary')
             ->emit('undoEditingPost', [$post->id])
             ->close(), // [tl! focus]
-    ]);
+    ])
+    ->send();
 ```

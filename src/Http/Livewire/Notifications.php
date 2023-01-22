@@ -18,11 +18,24 @@ class Notifications extends Component
 {
     public Collection $notifications;
 
+    /**
+     * @var array<string, string>
+     */
     protected $listeners = [
         'notificationSent' => 'pushNotificationFromEvent',
         'notificationsSent' => 'pullNotificationsFromSession',
         'notificationClosed' => 'removeNotification',
     ];
+
+    public static bool $hasDatabaseNotifications = false;
+
+    public static ?string $databaseNotificationsTrigger = null;
+
+    public static ?string $databaseNotificationsPollingInterval = '30s';
+
+    public static string $horizontalAlignment = 'right';
+
+    public static string $verticalAlignment = 'top';
 
     public function mount(): void
     {
@@ -39,6 +52,9 @@ class Notifications extends Component
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $notification
+     */
     public function pushNotificationFromEvent(array $notification): void
     {
         $notification = Notification::fromArray($notification);
@@ -94,12 +110,11 @@ class Notifications extends Component
         return $this->getUnreadDatabaseNotificationsQuery()->count();
     }
 
-    public function handleBroadcastNotification($notification): void
+    /**
+     * @param  array<string, mixed>  $notification
+     */
+    public function handleBroadcastNotification(array $notification): void
     {
-        if (! is_array($notification)) {
-            return;
-        }
-
         if (($notification['format'] ?? null) !== 'filament') {
             return;
         }
@@ -117,17 +132,17 @@ class Notifications extends Component
 
     public function hasDatabaseNotifications(): bool
     {
-        return $this->getUser() && config('notifications.database.enabled');
+        return $this->getUser() && static::$hasDatabaseNotifications;
     }
 
     public function getPollingInterval(): ?string
     {
-        return config('notifications.database.polling_interval');
+        return static::$databaseNotificationsPollingInterval;
     }
 
     public function getDatabaseNotificationsTrigger(): ?View
     {
-        $viewPath = config('notifications.database.trigger');
+        $viewPath = static::$databaseNotificationsTrigger;
 
         if (blank($viewPath)) {
             return null;
@@ -169,8 +184,33 @@ class Notifications extends Component
         return $date->diffForHumans();
     }
 
+    public static function databaseNotifications(bool $condition = true): void
+    {
+        static::$hasDatabaseNotifications = $condition;
+    }
+
+    public static function databaseNotificationsTrigger(?string $trigger): void
+    {
+        static::$databaseNotificationsTrigger = $trigger;
+    }
+
+    public static function databaseNotificationsPollingInterval(?string $interval): void
+    {
+        static::$databaseNotificationsPollingInterval = $interval;
+    }
+
+    public static function horizontalAlignment(string $alignment): void
+    {
+        static::$horizontalAlignment = $alignment;
+    }
+
+    public static function verticalAlignment(string $alignment): void
+    {
+        static::$verticalAlignment = $alignment;
+    }
+
     public function render(): View
     {
-        return view('notifications::notifications');
+        return view('filament-notifications::notifications');
     }
 }

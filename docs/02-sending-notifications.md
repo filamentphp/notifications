@@ -196,7 +196,7 @@ new Notification()
 
 ## Actions
 
-Notifications support actions that render a button or link which may open a URL or emit a Livewire event. Actions will render as link by default, but you may configure it to render a button using the `button()` method. Actions can be defined as follows:
+Notifications support actions, which are buttons that render below the content of the notification. They can open a URL or emit a Livewire event. Actions can be defined as follows:
 
 ```php
 use Filament\Notifications\Actions\Action; // [tl! focus]
@@ -210,7 +210,7 @@ Notification::make()
         Action::make('view')
             ->button(),
         Action::make('undo')
-            ->color('secondary'),
+            ->color('gray'),
     ]) // [tl! focus:end]
     ->send();
 ```
@@ -226,16 +226,18 @@ new Notification()
         new NotificationAction('view')
             .button(),
         new NotificationAction('undo')
-            .color('secondary'),
+            .color('gray'),
     ]) // [tl! focus:end]
     .send()
 ```
 
 ![Notification with actions](https://user-images.githubusercontent.com/44533235/180995819-ed5c78fa-b567-4bc6-9e5c-64fe615c4360.png)
 
-### Opening URLs
+You can learn more about how to style action buttons [here](../actions/trigger-button).
 
-If clicking on an action should open a URL, optionally in a new tab, you can do so:
+### Opening URLs from actions
+
+You can open a URL, optionally in a new tab, when clicking on an action:
 
 ```php
 use Filament\Notifications\Actions\Action;
@@ -250,7 +252,7 @@ Notification::make()
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true) // [tl! focus]
         Action::make('undo')
-            ->color('secondary'),
+            ->color('gray'),
     ])
     ->send();
 ```
@@ -268,12 +270,12 @@ new Notification()
             .url('/view') // [tl! focus:start]
             .openUrlInNewTab(), // [tl! focus:end]
         new NotificationAction('undo')
-            .color('secondary'),
+            .color('gray'),
     ])
     .send()
 ```
 
-### Emitting events
+### Emitting Livewire events from actions
 
 Sometimes you want to execute additional code when a notification action is clicked. This can be achieved by setting a Livewire event which should be emitted on clicking the action. You may optionally pass an array of data, which will be available as parameters in the event listener on your Livewire component:
 
@@ -290,7 +292,7 @@ Notification::make()
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true),
         Action::make('undo')
-            ->color('secondary')
+            ->color('gray')
             ->emit('undoEditingPost', [$post->id]), // [tl! focus]
     ])
     ->send();
@@ -309,7 +311,7 @@ new Notification()
             .url('/view')
             .openUrlInNewTab(),
         new NotificationAction('undo')
-            .color('secondary')
+            .color('gray')
             .emit('undoEditingPost'), // [tl! focus]
     ])
     .send()
@@ -332,7 +334,7 @@ Notification::make()
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true),
         Action::make('undo')
-            ->color('secondary')
+            ->color('gray')
             ->emit('undoEditingPost', [$post->id])
             ->close(), // [tl! focus]
     ])
@@ -352,7 +354,7 @@ new Notification()
             .url('/view')
             .openUrlInNewTab(),
         new NotificationAction('undo')
-            .color('secondary')
+            .color('gray')
             .emit('undoEditingPost')
             .close(), // [tl! focus]
     ])
@@ -366,7 +368,7 @@ The JavaScript objects (`Notification` and `NotificationAction`) are assigned to
 You may also import them in a bundled JavaScript file:
 
 ```js
-import { Notification, NotificationAction } from '../../vendor/filament/notifications/dist/module.esm'
+import { Notification, NotificationAction } from '../../vendor/filament/notifications/dist/index.js'
 
 // ...
 ```

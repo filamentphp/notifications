@@ -4,6 +4,9 @@ namespace Filament\Notifications;
 
 use Filament\Notifications\Http\Livewire\Notifications;
 use Filament\Notifications\Testing\TestsNotifications;
+use Filament\Support\Assets\AssetManager;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 use Livewire\Component;
 use Livewire\Livewire;
 use Livewire\Response;
@@ -16,11 +19,18 @@ class NotificationsServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('notifications')
-            ->hasCommands(Commands\InstallCommand::class)
-            ->hasConfigFile()
+            ->name('filament-notifications')
             ->hasTranslations()
             ->hasViews();
+    }
+
+    public function packageRegistered(): void
+    {
+        $this->app->resolving(AssetManager::class, function () {
+            FilamentAsset::register([
+                Js::make('notifications', __DIR__ . '/../dist/index.js'),
+            ], 'filament/notifications');
+        });
     }
 
     public function packageBooted(): void

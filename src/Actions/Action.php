@@ -2,25 +2,44 @@
 
 namespace Filament\Notifications\Actions;
 
+use Filament\Actions\Concerns\CanBeOutlined;
+use Filament\Actions\Concerns\CanEmitEvent;
+use Filament\Actions\Concerns\CanOpenUrl;
+use Filament\Actions\Concerns\HasKeyBindings;
+use Filament\Actions\Concerns\HasTooltip;
+use Filament\Actions\Contracts\Groupable;
+use Filament\Actions\StaticAction;
 use Filament\Notifications\Actions\Concerns\CanCloseNotification;
-use Filament\Support\Actions\BaseAction;
-use Filament\Support\Actions\Concerns\CanBeOutlined;
-use Filament\Support\Actions\Concerns\CanEmitEvent;
-use Filament\Support\Actions\Concerns\CanOpenUrl;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Js;
 use Illuminate\Support\Str;
 
-class Action extends BaseAction implements Arrayable
+class Action extends StaticAction implements Arrayable, Groupable
 {
     use CanBeOutlined;
     use CanCloseNotification;
     use CanEmitEvent;
     use CanOpenUrl;
+    use HasKeyBindings;
+    use HasTooltip;
 
-    protected string $view = 'notifications::actions.link-action';
+    /**
+     * @var view-string
+     */
+    protected string $view = 'filament-actions::link-action';
 
     protected string $viewIdentifier = 'action';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->size('sm');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [
@@ -31,6 +50,7 @@ class Action extends BaseAction implements Arrayable
             'extraAttributes' => $this->getExtraAttributes(),
             'icon' => $this->getIcon(),
             'iconPosition' => $this->getIconPosition(),
+            'iconSize' => $this->getIconSize(),
             'isOutlined' => $this->isOutlined(),
             'isDisabled' => $this->isDisabled(),
             'label' => $this->getLabel(),
@@ -42,6 +62,9 @@ class Action extends BaseAction implements Arrayable
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function fromArray(array $data): static
     {
         $static = static::make($data['name']);
@@ -49,7 +72,11 @@ class Action extends BaseAction implements Arrayable
         $view = $data['view'] ?? null;
 
         if (filled($view) && ($static->getView() !== $view) && static::isViewSafe($view)) {
-            $static->view($data['view']);
+            $static->view($view);
+        }
+
+        if (filled($size = $data['size'] ?? null)) {
+            $static->size($size);
         }
 
         $static->close($data['shouldCloseNotification'] ?? false);
@@ -59,37 +86,52 @@ class Action extends BaseAction implements Arrayable
         $static->extraAttributes($data['extraAttributes'] ?? []);
         $static->icon($data['icon'] ?? null);
         $static->iconPosition($data['iconPosition'] ?? null);
+        $static->iconSize($data['iconSize'] ?? null);
         $static->label($data['label'] ?? null);
         $static->outlined($data['isOutlined'] ?? false);
-        $static->size($data['size'] ?? null);
         $static->url($data['url'] ?? null, $data['shouldOpenUrlInNewTab'] ?? false);
 
         return $static;
     }
 
+    /**
+     * @param  view-string  $view
+     */
     protected static function isViewSafe(string $view): bool
     {
-        return Str::startsWith($view, 'notifications::actions.');
+        return Str::startsWith($view, 'filament-actions::');
     }
 
-    public function button(): static
+    public function getLivewireMountAction(): ?string
     {
-        $this->view('notifications::actions.button-action');
+        if ($this->shouldCloseNotification()) {
+            return null;
+        }
 
-        return $this;
+        if ($this->getUrl()) {
+            return null;
+        }
+
+        $event = $this->getEvent();
+
+        if (! $event) {
+            return null;
+        }
+
+        $emitArguments = collect([$event])
+            ->merge($this->getEventData())
+            ->map(fn ($value): string => Js::from($value)->toHtml())
+            ->implode(', ');
+
+        return "\$emit({$emitArguments})";
     }
 
-    public function grouped(): static
+    public function getAlpineMountAction(): ?string
     {
-        $this->view('notifications::actions.grouped-action');
+        if (! $this->shouldCloseNotification()) {
+            return null;
+        }
 
-        return $this;
-    }
-
-    public function link(): static
-    {
-        $this->view('notifications::actions.link-action');
-
-        return $this;
+        return 'close()';
     }
 }

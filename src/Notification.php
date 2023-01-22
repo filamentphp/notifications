@@ -35,7 +35,10 @@ class Notification extends ViewComponent implements Arrayable
     use HasId;
     use HasTitle;
 
-    protected string $view = 'notifications::notification';
+    /**
+     * @var view-string
+     */
+    protected string $view = 'filament-notifications::notification';
 
     protected string $viewIdentifier = 'notification';
 
@@ -65,6 +68,9 @@ class Notification extends ViewComponent implements Arrayable
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public static function fromArray(array $data): static
     {
         $static = static::make($data['id'] ?? Str::random());
@@ -78,7 +84,7 @@ class Notification extends ViewComponent implements Arrayable
             ),
         );
         $static->body($data['body'] ?? null);
-        $static->duration($data['duration'] ?? null);
+        $static->duration($data['duration'] ?? $static->getDuration());
         $static->icon($data['icon'] ?? null);
         $static->iconColor($data['iconColor'] ?? $static->getIconColor());
         $static->title($data['title'] ?? null);
@@ -96,6 +102,9 @@ class Notification extends ViewComponent implements Arrayable
         return $this;
     }
 
+    /**
+     * @param  Model | Authenticatable | Collection | array<Model | Authenticatable>  $users
+     */
     public function broadcast(Model | Authenticatable | Collection | array $users): static
     {
         if (! is_iterable($users)) {
@@ -109,6 +118,9 @@ class Notification extends ViewComponent implements Arrayable
         return $this;
     }
 
+    /**
+     * @param  Model | Authenticatable | Collection | array<Model | Authenticatable>  $users
+     */
     public function sendToDatabase(Model | Authenticatable | Collection | array $users, bool $isEventDispatched = false): static
     {
         if (! is_iterable($users)) {
@@ -147,6 +159,9 @@ class Notification extends ViewComponent implements Arrayable
         return new BroadcastMessage($data);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getDatabaseMessage(): array
     {
         $data = $this->toArray();

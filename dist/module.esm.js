@@ -446,6 +446,14 @@ var Notification = class {
     this.iconColor("danger");
     return this;
   }
+  view(view) {
+    this.view = view;
+    return this;
+  }
+  viewData(viewData) {
+    this.viewData = viewData;
+    return this;
+  }
   send() {
     Livewire.emit("notificationSent", this);
     return this;
@@ -474,10 +482,10 @@ var Action = class {
     this.emitDirection = "self";
     return this;
   }
-  emitTo(to, event, data) {
+  emitTo(component, event, data) {
     this.emit(event, data);
     this.emitDirection = "to";
-    this.emitToTarget = to;
+    this.emitToComponent = component;
     return this;
   }
   emitUp(event, data) {
@@ -489,8 +497,8 @@ var Action = class {
     this.emitDirection = emitDirection;
     return this;
   }
-  emitToTarget(emitToTarget) {
-    this.emitToTarget = emitToTarget;
+  emitToComponent(component) {
+    this.emitToComponent = component;
     return this;
   }
   event(event) {

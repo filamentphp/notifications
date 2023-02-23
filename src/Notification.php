@@ -20,6 +20,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\DatabaseNotification as DatabaseNotificationModel;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Assert;
@@ -42,6 +43,11 @@ class Notification extends ViewComponent implements Arrayable
 
     protected string $viewIdentifier = 'notification';
 
+    /**
+     * @var array<string>
+     */
+    protected array $safeViews = [];
+
     public function __construct(string $id)
     {
         $this->id($id);
@@ -55,6 +61,14 @@ class Notification extends ViewComponent implements Arrayable
         return $static;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public function getViewData(): array
+    {
+        return $this->viewData;
+    }
+
     public function toArray(): array
     {
         return [
@@ -65,6 +79,8 @@ class Notification extends ViewComponent implements Arrayable
             'icon' => $this->getIcon(),
             'iconColor' => $this->getIconColor(),
             'title' => $this->getTitle(),
+            'view' => $this->getView(),
+            'viewData' => $this->getViewData(),
         ];
     }
 
@@ -83,6 +99,14 @@ class Notification extends ViewComponent implements Arrayable
                 $data['actions'] ?? [],
             ),
         );
+
+        $view = $data['view'] ?? null;
+
+        if (filled($view) && ($static->getView() !== $view) && $static->isViewSafe($view)) {
+            $static->view($data['view']);
+        }
+
+        $static->viewData($data['viewData'] ?? []);
         $static->body($data['body'] ?? null);
         $static->duration($data['duration'] ?? $static->getDuration());
         $static->icon($data['icon'] ?? null);
@@ -90,6 +114,24 @@ class Notification extends ViewComponent implements Arrayable
         $static->title($data['title'] ?? null);
 
         return $static;
+    }
+
+    protected function isViewSafe(string $view): bool
+    {
+        return in_array($view, $this->safeViews, strict: true);
+    }
+
+    /**
+     * @param  string | array<string>  $safeViews
+     */
+    public function safeViews(string | array $safeViews): static
+    {
+        $this->safeViews = array_merge(
+            $this->safeViews,
+            Arr::wrap($safeViews),
+        );
+
+        return $this;
     }
 
     public function send(): static

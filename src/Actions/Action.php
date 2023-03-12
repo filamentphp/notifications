@@ -45,6 +45,8 @@ class Action extends StaticAction implements Arrayable, Groupable
             'color' => $this->getColor(),
             'event' => $this->getEvent(),
             'eventData' => $this->getEventData(),
+            'emitDirection' => $this->getEmitDirection(),
+            'emitToComponent' => $this->getEmitToComponent(),
             'extraAttributes' => $this->getExtraAttributes(),
             'icon' => $this->getIcon(),
             'iconPosition' => $this->getIconPosition(),
@@ -126,13 +128,13 @@ class Action extends StaticAction implements Arrayable, Groupable
         $arguments = collect([$event])
             ->merge($this->getEventData())
             ->when(
-                $this->emitToComponent,
+                $this->getEmitToComponent(),
                 fn (Collection $collection, string $component) => $collection->prepend($component),
             )
             ->map(fn (mixed $value): string => Js::from($value)->toHtml())
             ->implode(', ');
 
-        return match ($this->emitDirection) {
+        return match ($this->getEmitDirection()) {
             'self' => "\$emitSelf($arguments)",
             'to' => "\$emitTo($arguments)",
             'up' => "\$emitUp($arguments)",

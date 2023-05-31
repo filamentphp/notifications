@@ -7,9 +7,6 @@ use Livewire\Wireable;
 
 class Collection extends BaseCollection implements Wireable
 {
-    /**
-     * @param  array<array<string, mixed>>  $items
-     */
     final public function __construct($items = [])
     {
         parent::__construct($items);
@@ -28,7 +25,7 @@ class Collection extends BaseCollection implements Wireable
      */
     public static function fromLivewire($value): static
     {
-        return app(static::class, ['items' => $value])->transform(
+        return (new static($value))->transform(
             fn (array $notification): Notification => Notification::fromArray($notification),
         );
     }

@@ -107,9 +107,17 @@ export default (Alpine) => {
             this.isShown = false
 
             setTimeout(
-                () => Livewire.emitUp('notificationClosed', notification.id),
+                () => Livewire.emit('notificationClosed', notification.id),
                 this.getTransitionDuration(),
             )
+        },
+
+        markAsRead: function () {
+            Livewire.emit('markedNotificationAsRead', notification.id)
+        },
+
+        markAsUnread: function () {
+            Livewire.emit('markedNotificationAsUnread', notification.id)
         },
 
         getTransitionDuration: function () {

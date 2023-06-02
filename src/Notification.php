@@ -4,18 +4,10 @@ namespace Filament\Notifications;
 
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Actions\ActionGroup;
-use Filament\Notifications\Concerns\CanBeInline;
-use Filament\Notifications\Concerns\HasActions;
-use Filament\Notifications\Concerns\HasBody;
-use Filament\Notifications\Concerns\HasColor;
-use Filament\Notifications\Concerns\HasDate;
-use Filament\Notifications\Concerns\HasDuration;
-use Filament\Notifications\Concerns\HasIcon;
-use Filament\Notifications\Concerns\HasId;
-use Filament\Notifications\Concerns\HasTitle;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Http\Livewire\Notifications;
 use Filament\Support\Components\ViewComponent;
+use Filament\Support\Concerns\HasIcon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
@@ -28,15 +20,15 @@ use PHPUnit\Framework\Assert;
 
 class Notification extends ViewComponent implements Arrayable
 {
-    use CanBeInline;
-    use HasActions;
-    use HasBody;
-    use HasColor;
-    use HasDate;
-    use HasDuration;
+    use Concerns\CanBeInline;
+    use Concerns\HasActions;
+    use Concerns\HasBody;
+    use Concerns\HasColor;
+    use Concerns\HasDate;
+    use Concerns\HasDuration;
+    use Concerns\HasId;
+    use Concerns\HasTitle;
     use HasIcon;
-    use HasId;
-    use HasTitle;
 
     /**
      * @var view-string
@@ -130,10 +122,10 @@ class Notification extends ViewComponent implements Arrayable
      */
     public function safeViews(string | array $safeViews): static
     {
-        $this->safeViews = array_merge(
-            $this->safeViews,
-            Arr::wrap($safeViews),
-        );
+        $this->safeViews = [
+            ...$this->safeViews,
+            ...Arr::wrap($safeViews),
+        ];
 
         return $this;
     }
@@ -221,11 +213,28 @@ class Notification extends ViewComponent implements Arrayable
     public function status(string $status): static
     {
         return match ($status) {
+            'danger' => $this->danger(),
+            'info' => $this->info(),
             'success' => $this->success(),
             'warning' => $this->warning(),
-            'danger' => $this->danger(),
             default => $this,
         };
+    }
+
+    public function danger(): static
+    {
+        $this->icon('heroicon-o-x-circle');
+        $this->iconColor('danger');
+
+        return $this;
+    }
+
+    public function info(): static
+    {
+        $this->icon('heroicon-o-information-circle');
+        $this->iconColor('info');
+
+        return $this;
     }
 
     public function success(): static
@@ -240,14 +249,6 @@ class Notification extends ViewComponent implements Arrayable
     {
         $this->icon('heroicon-o-exclamation-circle');
         $this->iconColor('warning');
-
-        return $this;
-    }
-
-    public function danger(): static
-    {
-        $this->icon('heroicon-o-x-circle');
-        $this->iconColor('danger');
 
         return $this;
     }

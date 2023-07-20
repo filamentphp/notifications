@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Notificaciones',
 
-        'buttons' => [
+        'actions' => [
 
             'clear' => [
                 'label' => 'Borrar',
@@ -21,6 +21,24 @@ return [
         'empty' => [
             'heading' => 'No hay notificaciones',
             'description' => 'Por favor, compruebe más tarde',
+        ],
+
+        'pagination' => [
+
+            'label' => 'Navegación en la Paginación',
+
+            'buttons' => [
+
+                'next' => [
+                    'label' => 'Siguiente',
+                ],
+
+                'previous' => [
+                    'label' => 'Anterior',
+                ],
+
+            ],
+
         ],
 
     ],

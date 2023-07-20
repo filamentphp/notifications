@@ -43,7 +43,7 @@ php artisan filament:install --notifications
 First, use NPM to install Tailwind CSS and its `forms` and `typography` plugins:
 
 ```bash
-npm install tailwindcss @tailwindcss/forms @tailwindcss/typography postcss --save-dev
+npm install tailwindcss @tailwindcss/forms @tailwindcss/typography postcss autoprefixer --save-dev
 ```
 
 Create a new `tailwind.config.js` file. Ensure that you add Filament's `preset` which configures colors and the plugins you installed:
@@ -94,7 +94,7 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: [
                 ...refreshPaths,
-                'app/Http/Livewire/**',
+                'app/Livewire/**',
             ],
         }),
     ],
@@ -105,7 +105,7 @@ Compile your new CSS and JS assets using `npm run dev`.
 
 ### Configuring layout
 
-Finally, create a new `resources/views/layouts/app.blade.php` layout file for Livewire components:
+Finally, create a new `resources/views/components/layouts/app.blade.php` layout file for Livewire components:
 
 ```blade
 <!DOCTYPE html>
@@ -119,8 +119,12 @@ Finally, create a new `resources/views/layouts/app.blade.php` layout file for Li
 
         <title>{{ config('app.name') }}</title>
 
-        <style>[x-cloak] { display: none !important; }</style>
-        @livewireStyles
+        <style>
+            [x-cloak] {
+                display: none !important;
+            }
+        </style>
+
         @filamentStyles
         @vite('resources/css/app.css')
     </head>
@@ -130,10 +134,8 @@ Finally, create a new `resources/views/layouts/app.blade.php` layout file for Li
 
         @livewire('notifications')
 
-        @livewireScripts
         @filamentScripts
         @vite('resources/js/app.js')
-        <script src="//unpkg.com/alpinejs" defer></script>
     </body>
 </html>
 ```

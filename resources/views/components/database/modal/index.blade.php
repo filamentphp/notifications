@@ -38,7 +38,11 @@
         </x-slot>
 
         <div
-            class="-mx-6 -mt-6 divide-y divide-gray-200 border-b border-gray-200 dark:divide-white/10 dark:border-white/10"
+            @class([
+                '-mx-6 -mt-6 divide-y divide-gray-200 dark:divide-white/10',
+                '-mb-6' => ! $isPaginated,
+                'border-b border-gray-200 dark:border-white/10' => $isPaginated,
+            ])
         >
             @foreach ($notifications as $notification)
                 <div

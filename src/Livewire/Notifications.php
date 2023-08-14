@@ -1,12 +1,15 @@
 <?php
 
-namespace Filament\Notifications\Http\Livewire;
+namespace Filament\Notifications\Livewire;
 
 use Filament\Notifications\Collection;
 use Filament\Notifications\Notification;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\VerticalAlignment;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Notifications extends Component
@@ -16,18 +19,9 @@ class Notifications extends Component
 
     public Collection $notifications;
 
-    /**
-     * @var array<string, string>
-     */
-    protected $listeners = [
-        'notificationSent' => 'pushNotificationFromEvent',
-        'notificationsSent' => 'pullNotificationsFromSession',
-        'notificationClosed' => 'removeNotification',
-    ];
+    public static Alignment $alignment = Alignment::Right;
 
-    public static string $horizontalAlignment = 'right';
-
-    public static string $verticalAlignment = 'top';
+    public static VerticalAlignment $verticalAlignment = VerticalAlignment::Start;
 
     public function mount(): void
     {
@@ -35,6 +29,7 @@ class Notifications extends Component
         $this->pullNotificationsFromSession();
     }
 
+    #[On('notificationsSent')]
     public function pullNotificationsFromSession(): void
     {
         foreach (session()->pull('filament.notifications') ?? [] as $notification) {
@@ -47,6 +42,7 @@ class Notifications extends Component
     /**
      * @param  array<string, mixed>  $notification
      */
+    #[On('notificationSent')]
     public function pushNotificationFromEvent(array $notification): void
     {
         $notification = Notification::fromArray($notification);
@@ -54,6 +50,7 @@ class Notifications extends Component
         $this->pushNotification($notification);
     }
 
+    #[On('notificationClosed')]
     public function removeNotification(string $id): void
     {
         if (! $this->notifications->has($id)) {
@@ -105,12 +102,12 @@ class Notifications extends Component
         return "{$userClass}.{$user->getKey()}";
     }
 
-    public static function horizontalAlignment(string $alignment): void
+    public static function alignment(Alignment $alignment): void
     {
-        static::$horizontalAlignment = $alignment;
+        static::$alignment = $alignment;
     }
 
-    public static function verticalAlignment(string $alignment): void
+    public static function verticalAlignment(VerticalAlignment $alignment): void
     {
         static::$verticalAlignment = $alignment;
     }

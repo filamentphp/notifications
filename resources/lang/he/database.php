@@ -6,7 +6,7 @@ return [
 
         'heading' => 'התראות',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'נקה',

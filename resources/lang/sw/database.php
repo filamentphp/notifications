@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Arifa',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Safisha',

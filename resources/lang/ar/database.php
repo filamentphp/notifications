@@ -6,7 +6,7 @@ return [
 
         'heading' => 'التنبيهات',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'مسح',
@@ -20,7 +20,7 @@ return [
 
         'empty' => [
             'heading' => 'لا توجد تنبيهات',
-            'description' => 'يرجى التحقق مرة أخرى لاحقاً.',
+            'description' => 'يرجي التحقق مرة أخري لاحقا',
         ],
 
     ],

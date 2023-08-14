@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Powiadomienia',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Wyczyść',

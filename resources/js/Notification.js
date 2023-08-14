@@ -134,13 +134,7 @@ class Notification {
     }
 
     send() {
-        window.dispatchEvent(
-            new CustomEvent('notificationSent', {
-                detail: {
-                    notification: this,
-                },
-            }),
-        )
+        Livewire.emit('notificationSent', this)
 
         return this
     }
@@ -165,63 +159,43 @@ class Action {
         return this
     }
 
-    dispatch(event, data) {
+    emit(event, data) {
         this.event(event)
         this.eventData(data)
 
         return this
     }
 
-    dispatchSelf(event, data) {
-        this.dispatch(event, data)
-        this.dispatchDirection = 'self'
-
-        return this
-    }
-
-    dispatchTo(component, event, data) {
-        this.dispatch(event, data)
-        this.dispatchDirection = 'to'
-        this.dispatchToComponent = component
-
-        return this
-    }
-
-    /**
-     * @deprecated Use `dispatch()` instead.
-     */
-    emit(event, data) {
-        this.dispatch(event, data)
-
-        return this
-    }
-
-    /**
-     * @deprecated Use `dispatchSelf()` instead.
-     */
     emitSelf(event, data) {
-        this.dispatchSelf(event, data)
+        this.emit(event, data)
+        this.emitDirection = 'self'
 
         return this
     }
 
-    /**
-     * @deprecated Use `dispatchTo()` instead.
-     */
     emitTo(component, event, data) {
-        this.dispatchTo(component, event, data)
+        this.emit(event, data)
+        this.emitDirection = 'to'
+        this.emitToComponent = component
 
         return this
     }
 
-    dispatchDirection(dispatchDirection) {
-        this.dispatchDirection = dispatchDirection
+    emitUp(event, data) {
+        this.emit(event, data)
+        this.emitDirection = 'up'
 
         return this
     }
 
-    dispatchToComponent(component) {
-        this.dispatchToComponent = component
+    emitDirection(emitDirection) {
+        this.emitDirection = emitDirection
+
+        return this
+    }
+
+    emitToComponent(component) {
+        this.emitToComponent = component
 
         return this
     }

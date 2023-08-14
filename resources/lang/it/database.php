@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Notifiche',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Pulisci',

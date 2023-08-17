@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Notifications',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Effacer',

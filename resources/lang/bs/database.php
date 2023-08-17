@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Obavijesti',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Izbrišite sve',

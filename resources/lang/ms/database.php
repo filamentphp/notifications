@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Pemberitahuan',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Hapus',

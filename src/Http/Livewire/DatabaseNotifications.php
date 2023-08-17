@@ -1,6 +1,6 @@
 <?php
 
-namespace Filament\Notifications\Livewire;
+namespace Filament\Notifications\Http\Livewire;
 
 use Carbon\CarbonInterface;
 use Filament\Notifications\Notification;
@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
-use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,18 +19,22 @@ class DatabaseNotifications extends Component
 {
     use WithPagination;
 
+    /**
+     * @var array<string, string>
+     */
+    protected $listeners = [
+        'databaseNotificationsSent' => '$refresh',
+        'markedNotificationAsRead' => 'markNotificationAsRead',
+        'markedNotificationAsUnread' => 'markNotificationAsUnread',
+        'notificationClosed' => 'removeNotification',
+    ];
+
     public static bool $isPaginated = true;
 
     public static ?string $trigger = null;
 
     public static ?string $pollingInterval = '30s';
 
-    #[On('databaseNotificationsSent')]
-    public function refresh(): void
-    {
-    }
-
-    #[On('notificationClosed')]
     public function removeNotification(string $id): void
     {
         $this->getNotificationsQuery()
@@ -39,7 +42,6 @@ class DatabaseNotifications extends Component
             ->delete();
     }
 
-    #[On('markedNotificationAsRead')]
     public function markNotificationAsRead(string $id): void
     {
         $this->getNotificationsQuery()
@@ -47,7 +49,6 @@ class DatabaseNotifications extends Component
             ->update(['read_at' => now()]);
     }
 
-    #[On('markedNotificationAsUnread')]
     public function markNotificationAsUnread(string $id): void
     {
         $this->getNotificationsQuery()
@@ -157,9 +158,9 @@ class DatabaseNotifications extends Component
     }
 
     /**
-     * @return array<string>
+     * @return array<mixed>
      */
-    public function queryStringHandlesPagination(): array
+    public function queryStringWithPagination(): array
     {
         return [];
     }

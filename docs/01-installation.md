@@ -2,48 +2,37 @@
 title: Installation
 ---
 
-**The Notifications package is pre-installed with the [Panel Builder](/docs/panels).** This guide is for using the Notifications package in a custom TALL Stack application (Tailwind, Alpine, Livewire, Laravel).
+**Using notifications inside a [panel](../panels)**? You can skip this installation. This guide is for people who want to use the package inside their custom TALL-stack app.
 
 ## Requirements
 
-Filament requires the following to run:
+Filament has a few requirements to run:
 
 - PHP 8.1+
-- Laravel v10.0+
-- Livewire v3.0+
+- Laravel v9.0+
+- Livewire v2.0+
 
-> **Livewire v3 is still in beta**
-> Although breaking changes should be minimal, we recommend testing your application thoroughly before using Livewire v3 in production.
-
-First, since Livewire v3 is still in beta, make sure that the `minimum-stability` in your `composer.json` is set to `dev`:
-
-```json
-"minimum-stability": "dev",
-```
-
-Then, require the Notifications package using Composer:
+First, require the actions package using Composer:
 
 ```bash
-composer require filament/notifications:"^3.0-stable" -W
+composer require filament/notifications:"^3.0"
 ```
 
 ## New Laravel projects
 
-To quickly get started with Filament in a new Laravel project, run the following commands to install [Livewire](https://livewire.laravel.com), [Alpine.js](https://alpinejs.dev), and [Tailwind CSS](https://tailwindcss.com):
-
-> Since these commands will overwrite existing files in your application, only run this in a new Laravel project!
+To get started with Filament quickly, you can set up [Livewire](https://laravel-livewire.com), [Alpine.js](https://alpinejs.dev) and [Tailwind CSS](https://tailwindcss.com) with these commands:
 
 ```bash
 php artisan filament:install --scaffold --notifications
-
 npm install
-
 npm run dev
 ```
 
+> These commands will ruthlessly overwrite existing files in your application, hence why we only recommend using this method for new projects.
+
 ## Existing Laravel projects
 
-Run the following command to install the Notifications package assets:
+First, run the following command to install the package's assets:
 
 ```bash
 php artisan filament:install --notifications
@@ -51,13 +40,13 @@ php artisan filament:install --notifications
 
 ### Installing Tailwind CSS
 
-Run the following command to install Tailwind CSS with the Tailwind Forms and Typography plugins:
+First, use NPM to install Tailwind CSS and its `forms` and `typography` plugins:
 
 ```bash
-npm install tailwindcss @tailwindcss/forms @tailwindcss/typography postcss autoprefixer --save-dev
+npm install tailwindcss @tailwindcss/forms @tailwindcss/typography postcss --save-dev
 ```
 
-Create a new `tailwind.config.js` file and add the Filament `preset` *(includes the Filament color scheme and the required Tailwind plugins)*:
+Create a new `tailwind.config.js` file. Ensure that you add Filament's `preset` which configures colors and the plugins you installed:
 
 ```js
 import preset from './vendor/filament/support/tailwind.config.preset'
@@ -74,7 +63,7 @@ export default {
 
 ### Configuring styles
 
-Add Tailwind's CSS layers to your `resources/css/app.css`:
+In `resources/css/app.css`, import Tailwind CSS:
 
 ```css
 @tailwind base;
@@ -82,7 +71,7 @@ Add Tailwind's CSS layers to your `resources/css/app.css`:
 @tailwind utilities;
 ```
 
-Create a `postcss.config.js` file in the root of your project and register Tailwind CSS and Autoprefixer as plugins:
+Create a `postcss.config.js` file in the root of your project, and register Tailwind CSS and Autoprefixer as plugins:
 
 ```js
 export default {
@@ -93,8 +82,7 @@ export default {
 }
 ```
 
-### Automatically refreshing the browser
-You may also want to update your `vite.config.js` file to refresh the page automatically when Livewire components are updated:
+You may also want to update your `vite.config.js` file to refresh the page after Livewire components have been updated:
 
 ```js
 import { defineConfig } from 'vite'
@@ -106,20 +94,18 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: [
                 ...refreshPaths,
-                'app/Livewire/**',
+                'app/Http/Livewire/**',
             ],
         }),
     ],
 })
 ```
 
-### Compiling assets
+Compile your new CSS and JS assets using `npm run dev`.
 
-Compile your new CSS and Javascript assets using `npm run dev`.
+### Configuring layout
 
-### Configuring your layout
-
-Create a new `resources/views/components/layouts/app.blade.php` layout file for Livewire components:
+Finally, create a new `resources/views/layouts/app.blade.php` layout file for Livewire components:
 
 ```blade
 <!DOCTYPE html>
@@ -133,12 +119,8 @@ Create a new `resources/views/components/layouts/app.blade.php` layout file for 
 
         <title>{{ config('app.name') }}</title>
 
-        <style>
-            [x-cloak] {
-                display: none !important;
-            }
-        </style>
-
+        <style>[x-cloak] { display: none !important; }</style>
+        @livewireStyles
         @filamentStyles
         @vite('resources/css/app.css')
     </head>
@@ -146,15 +128,19 @@ Create a new `resources/views/components/layouts/app.blade.php` layout file for 
     <body class="antialiased">
         {{ $slot }}
 
+        @livewire('notifications')
+
+        @livewireScripts
         @filamentScripts
         @vite('resources/js/app.js')
+        <script src="//unpkg.com/alpinejs" defer></script>
     </body>
 </html>
 ```
 
 ## Publishing configuration
 
-You can publish the package configuration using the following command (optional):
+If you wish, you may publish the configuration of the package using:
 
 ```bash
 php artisan vendor:publish --tag=filament-config
@@ -162,9 +148,14 @@ php artisan vendor:publish --tag=filament-config
 
 ## Upgrading
 
-> Upgrading from Filament v2? Please review the [upgrade guide](upgrade-guide).
+To upgrade the package to the latest version, you must run:
 
-Filament automatically upgrades to the latest non-breaking version when you run `composer update`. If you notice that Filament is not upgrading automatically, ensure that the `filament:upgrade` command is present in your `composer.json`:
+```bash
+composer update
+php artisan filament:upgrade
+```
+
+We recommend adding the `filament:upgrade` command to your `composer.json`'s `post-autoload-dump` to run it automatically:
 
 ```json
 "post-autoload-dump": [
@@ -173,10 +164,4 @@ Filament automatically upgrades to the latest non-breaking version when you run 
 ],
 ```
 
-If you prefer not to use automatic upgrades, remove the `filament:upgrade` command from your `composer.json` and run the following commands:
-
-```bash
-composer update
-
-php artisan filament:upgrade
-```
+This should be done during the `filament:install` process, but double check it's been done.

@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Notifikasi',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Bersihkan',

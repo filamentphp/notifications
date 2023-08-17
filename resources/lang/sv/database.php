@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Aviseringar',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Rensa',

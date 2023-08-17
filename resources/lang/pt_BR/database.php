@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Notificações',
 
-        'buttons' => [
+        'actions' => [
 
             'clear' => [
                 'label' => 'Limpar',
@@ -19,8 +19,8 @@ return [
         ],
 
         'empty' => [
-            'heading' => 'Sem notificações aqui',
-            'description' => 'Por favor, verifique mais tarde',
+            'heading' => 'Sem notificações',
+            'description' => 'Por favor, verifique mais tarde.',
         ],
 
     ],

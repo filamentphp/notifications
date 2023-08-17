@@ -1,24 +1,26 @@
+@php
+    use Filament\Support\Enums\IconSize;
+@endphp
+
 @props([
     'color' => 'gray',
-    'name',
-    'size' => 'lg',
+    'icon',
+    'size' => IconSize::Large,
 ])
 
 <x-filament::icon
-    :name="$name"
-    alias="notifications::notification"
-    color="text-custom-400"
-    :size="
-        match ($size) {
-            'sm' => 'h-4 w-4',
-            'md' => 'h-5 w-5',
-            'lg' => 'h-6 w-6',
-            default => $size,
-        }
-    "
+    :icon="$icon"
     :attributes="
         $attributes
-            ->class(['filament-notifications-notification-icon'])
+            ->class([
+                'fi-no-notification-icon text-custom-400',
+                match ($size) {
+                    IconSize::Small, 'sm' => 'h-4 w-4',
+                    IconSize::Medium, 'md' => 'h-5 w-5',
+                    IconSize::Large, 'lg' => 'h-6 w-6',
+                    default => $size,
+                },
+            ])
             ->style([
                 \Filament\Support\get_color_css_variables($color, shades: [400]),
             ])

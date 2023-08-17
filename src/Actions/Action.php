@@ -5,6 +5,9 @@ namespace Filament\Notifications\Actions;
 use Closure;
 use Filament\Actions\Contracts\Groupable;
 use Filament\Actions\StaticAction;
+use Filament\Support\Enums\ActionSize;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Enums\IconSize;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 
@@ -22,7 +25,7 @@ class Action extends StaticAction implements Arrayable, Groupable
 
         $this->defaultView(static::LINK_VIEW);
 
-        $this->defaultSize('sm');
+        $this->defaultSize(ActionSize::Small);
     }
 
     public function markAsRead(bool | Closure $condition = true): static
@@ -49,12 +52,21 @@ class Action extends StaticAction implements Arrayable, Groupable
             'color' => $this->getColor(),
             'event' => $this->getEvent(),
             'eventData' => $this->getEventData(),
-            'emitDirection' => $this->getEmitDirection(),
-            'emitToComponent' => $this->getEmitToComponent(),
+            'dispatchDirection' => $this->getDispatchDirection(),
+            'dispatchToComponent' => $this->getDispatchToComponent(),
             'extraAttributes' => $this->getExtraAttributes(),
             'icon' => $this->getIcon(),
-            'iconPosition' => $this->getIconPosition(),
-            'iconSize' => $this->getIconSize(),
+            'iconPosition' => match ($iconPosition = $this->getIconPosition()) {
+                IconPosition::After => 'after',
+                IconPosition::Before => 'before',
+                default => $iconPosition,
+            },
+            'iconSize' => match ($iconSize = $this->getIconSize()) {
+                IconSize::Small => 'sm',
+                IconSize::Medium => 'md',
+                IconSize::Large => 'lg',
+                default => $iconSize,
+            },
             'isOutlined' => $this->isOutlined(),
             'isDisabled' => $this->isDisabled(),
             'label' => $this->getLabel(),
@@ -62,7 +74,14 @@ class Action extends StaticAction implements Arrayable, Groupable
             'shouldMarkAsRead' => $this->shouldMarkAsRead(),
             'shouldMarkAsUnread' => $this->shouldMarkAsUnread(),
             'shouldOpenUrlInNewTab' => $this->shouldOpenUrlInNewTab(),
-            'size' => $this->getSize(),
+            'size' => match ($size = $this->getSize()) {
+                ActionSize::ExtraSmall => 'xs',
+                ActionSize::Small => 'sm',
+                ActionSize::Medium => 'md',
+                ActionSize::Large => 'lg',
+                ActionSize::ExtraLarge => 'xl',
+                default => $size,
+            },
             'url' => $this->getUrl(),
             'view' => $this->getView(),
         ];
@@ -89,11 +108,10 @@ class Action extends StaticAction implements Arrayable, Groupable
         $static->color($data['color'] ?? null);
         $static->disabled($data['isDisabled'] ?? false);
 
-        match ($data['emitDirection'] ?? null) {
-            'self' => $static->emitSelf($data['event'] ?? null, $data['eventData'] ?? []),
-            'up' => $static->emitUp($data['event'] ?? null, $data['eventData'] ?? []),
-            'to' => $static->emitTo($data['emitToComponent'] ?? null, $data['event'] ?? null, $data['eventData'] ?? []),
-            default => $static->emit($data['event'] ?? null, $data['eventData'] ?? [])
+        match ($data['dispatchDirection'] ?? null) {
+            'self' => $static->dispatchSelf($data['event'] ?? null, $data['eventData'] ?? []),
+            'to' => $static->dispatchTo($data['dispatchToComponent'] ?? null, $data['event'] ?? null, $data['eventData'] ?? []),
+            default => $static->dispatch($data['event'] ?? null, $data['eventData'] ?? [])
         };
 
         $static->extraAttributes($data['extraAttributes'] ?? []);

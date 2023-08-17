@@ -31,12 +31,12 @@ Database notifications will be rendered within a modal. To open this modal, you 
 </button>
 ```
 
-`$unreadNotificationsCount` is a variable automatically passed to this view, which provides it with a real-time count of the number of unread notifications the user has.
+`$unreadNotificationsCount` is a variable automatically passed to this view, which provides it with a real-time count of unread notifications the user has.
 
 In the service provider, point to this new trigger view:
 
 ```php
-use Filament\Notifications\Http\Livewire\DatabaseNotifications;
+use Filament\Notifications\Livewire\DatabaseNotifications;
 
 DatabaseNotifications::trigger('filament-notifications.database-notifications-trigger');
 ```
@@ -98,7 +98,7 @@ Polling is the practice of periodically making a request to the server to check 
 By default, Livewire polls for new notifications every 30 seconds:
 
 ```php
-use Filament\Notifications\Http\Livewire\DatabaseNotifications;
+use Filament\Notifications\Livewire\DatabaseNotifications;
 
 DatabaseNotifications::databaseNotifications();
 DatabaseNotifications::databaseNotificationsPollingInterval('30s');
@@ -107,7 +107,7 @@ DatabaseNotifications::databaseNotificationsPollingInterval('30s');
 You may completely disable polling if you wish:
 
 ```php
-use Filament\Notifications\Http\Livewire\DatabaseNotifications;
+use Filament\Notifications\Livewire\DatabaseNotifications;
 
 DatabaseNotifications::databaseNotifications();
 DatabaseNotifications::databaseNotificationsPollingInterval(null);
@@ -117,7 +117,7 @@ DatabaseNotifications::databaseNotificationsPollingInterval(null);
 
 Alternatively, the package has a native integration with [Laravel Echo](https://laravel.com/docs/broadcasting#client-side-installation). Make sure Echo is installed, as well as a [server-side websockets integration](https://laravel.com/docs/broadcasting#server-side-installation) like Pusher.
 
-Once websockets are set up, after sending a database notification you may emit a `DatabaseNotificationsSent` event, which will immediately fetch new notifications for that user:
+Once websockets are set up, after sending a database notification you may dispatch a `DatabaseNotificationsSent` event, which will immediately fetch new notifications for that user:
 
 ```php
 use Filament\Notifications\Events\DatabaseNotificationsSent;
@@ -134,7 +134,7 @@ event(new DatabaseNotificationsSent($recipient));
 
 ## Marking database notifications as read
 
-There is a button at the top of the modal to mark all notifications as read at once. You may also add [actions](sending-notifications#adding-actions-to-notifications) to notifications, which you can use to mark individual notifications as read. To do this, use the `markAsRead()` method on the action:
+There is a button at the top of the modal to mark all notifications as read at once. You may also add [Actions](sending-notifications#adding-actions-to-notifications) to notifications, which you can use to mark individual notifications as read. To do this, use the `markAsRead()` method on the action:
 
 ```php
 use Filament\Notifications\Actions\Action;
@@ -143,7 +143,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the **post** have been saved.')
+    ->body('Changes to the post have been saved.')
     ->actions([
         Action::make('view')
             ->button()
@@ -161,7 +161,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the **post** have been saved.')
+    ->body('Changes to the post have been saved.')
     ->actions([
         Action::make('markAsUnread')
             ->button()

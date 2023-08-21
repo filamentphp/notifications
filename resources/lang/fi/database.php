@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Ilmoitukset',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Tyhjennä',

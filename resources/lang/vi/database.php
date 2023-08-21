@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Thông báo',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Xóa',

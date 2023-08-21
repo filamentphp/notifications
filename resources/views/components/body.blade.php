@@ -1,5 +1,5 @@
-<p
-    {{ $attributes->class(['fi-no-notification-body text-sm text-gray-500 dark:text-gray-400']) }}
+<div
+    {{ $attributes->class(['filament-notifications-body mt-1 text-sm text-gray-500 dark:text-gray-300']) }}
 >
     {{ $slot }}
-</p>
+</div>

@@ -7,8 +7,17 @@ export default (Alpine) => {
 
         computedStyle: null,
 
+        transitionDuration: null,
+
+        transitionEasing: null,
+
         init: function () {
             this.computedStyle = window.getComputedStyle(this.$el)
+
+            this.transitionDuration =
+                parseFloat(this.computedStyle.transitionDuration) * 1000
+
+            this.transitionEasing = this.computedStyle.transitionTimingFunction
 
             this.configureTransitions()
             this.configureAnimations()
@@ -60,68 +69,87 @@ export default (Alpine) => {
         configureAnimations: function () {
             let animation
 
-            Livewire.hook('message.received', (_, component) => {
-                if (
-                    !component.serverMemo.data.isFilamentNotificationsComponent
-                ) {
-                    return
-                }
+            Livewire.hook(
+                'commit',
+                ({ component, commit, succeed, fail, respond }) => {
+                    if (
+                        !component.snapshot.data
+                            .isFilamentNotificationsComponent
+                    ) {
+                        return
+                    }
 
-                const getTop = () => this.$el.getBoundingClientRect().top
-                const oldTop = getTop()
+                    const getTop = () => this.$el.getBoundingClientRect().top
+                    const oldTop = getTop()
 
-                animation = () => {
-                    this.$el.animate(
-                        [
-                            { transform: `translateY(${oldTop - getTop()}px)` },
-                            { transform: 'translateY(0px)' },
-                        ],
-                        {
-                            duration: this.getTransitionDuration(),
-                            easing: this.computedStyle.transitionTimingFunction,
-                        },
-                    )
-                }
+                    respond(() => {
+                        animation = () => {
+                            if (!this.isShown) {
+                                return
+                            }
 
-                this.$el
-                    .getAnimations()
-                    .forEach((animation) => animation.finish())
-            })
+                            this.$el.animate(
+                                [
+                                    {
+                                        transform: `translateY(${
+                                            oldTop - getTop()
+                                        }px)`,
+                                    },
+                                    { transform: 'translateY(0px)' },
+                                ],
+                                {
+                                    duration: this.transitionDuration,
+                                    easing: this.transitionEasing,
+                                },
+                            )
+                        }
 
-            Livewire.hook('message.processed', (_, component) => {
-                if (
-                    !component.serverMemo.data.isFilamentNotificationsComponent
-                ) {
-                    return
-                }
+                        this.$el
+                            .getAnimations()
+                            .forEach((animation) => animation.finish())
+                    })
 
-                if (!this.isShown) {
-                    return
-                }
-
-                animation()
-            })
+                    succeed(({ snapshot, effect }) => {
+                        animation()
+                    })
+                },
+            )
         },
 
         close: function () {
             this.isShown = false
 
             setTimeout(
-                () => Livewire.emit('notificationClosed', notification.id),
-                this.getTransitionDuration(),
+                () =>
+                    window.dispatchEvent(
+                        new CustomEvent('notificationClosed', {
+                            detail: {
+                                id: notification.id,
+                            },
+                        }),
+                    ),
+                this.transitionDuration,
             )
         },
 
         markAsRead: function () {
-            Livewire.emit('markedNotificationAsRead', notification.id)
+            window.dispatchEvent(
+                new CustomEvent('markedNotificationAsRead', {
+                    detail: {
+                        id: notification.id,
+                    },
+                }),
+            )
         },
 
         markAsUnread: function () {
-            Livewire.emit('markedNotificationAsUnread', notification.id)
-        },
-
-        getTransitionDuration: function () {
-            return parseFloat(this.computedStyle.transitionDuration) * 1000
+            window.dispatchEvent(
+                new CustomEvent('markedNotificationAsUnread', {
+                    detail: {
+                        id: notification.id,
+                    },
+                }),
+            )
         },
     }))
 }

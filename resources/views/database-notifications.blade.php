@@ -7,7 +7,7 @@
     @if ($pollingInterval = $this->getPollingInterval())
         wire:poll.{{ $pollingInterval }}
     @endif
-    class="flex items-center"
+    class="flex"
 >
     @if ($trigger = $this->getTrigger())
         <x-filament-notifications::database.trigger>

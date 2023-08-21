@@ -5,10 +5,11 @@ namespace Filament\Notifications;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Actions\ActionGroup;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
-use Filament\Notifications\Http\Livewire\Notifications;
+use Filament\Notifications\Livewire\Notifications;
 use Filament\Support\Components\ViewComponent;
 use Filament\Support\Concerns\HasColor;
 use Filament\Support\Concerns\HasIcon;
+use Filament\Support\Concerns\HasIconColor;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +31,7 @@ class Notification extends ViewComponent implements Arrayable
     use Concerns\HasTitle;
     use HasColor;
     use HasIcon;
+    use HasIconColor;
 
     /**
      * @var view-string
@@ -48,7 +50,7 @@ class Notification extends ViewComponent implements Arrayable
         $this->id($id);
     }
 
-    public static function make(string $id = null): static
+    public static function make(?string $id = null): static
     {
         $static = app(static::class, ['id' => $id ?? Str::orderedUuid()]);
         $static->configure();
@@ -263,7 +265,7 @@ class Notification extends ViewComponent implements Arrayable
         return $static;
     }
 
-    public static function assertNotified(Notification | string $notification = null): void
+    public static function assertNotified(Notification | string | null $notification = null): void
     {
         $notificationsLivewireComponent = new Notifications();
         $notificationsLivewireComponent->mount();

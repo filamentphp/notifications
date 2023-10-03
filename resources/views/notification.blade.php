@@ -1,7 +1,4 @@
 @php
-    use Filament\Support\Enums\Alignment;
-    use Filament\Support\Enums\VerticalAlignment;
-
     $color = $getColor() ?? 'gray';
     $isInline = $isInline();
 @endphp
@@ -11,88 +8,84 @@
     :x-transition:enter-start="
         \Illuminate\Support\Arr::toCssClasses([
             'opacity-0',
-            ($this instanceof \Filament\Notifications\Livewire\Notifications)
-            ? match (static::$alignment) {
-                Alignment::Start, Alignment::Left => '-translate-x-12',
-                Alignment::End, Alignment::Right => 'translate-x-12',
-                Alignment::Center => match (static::$verticalAlignment) {
-                    VerticalAlignment::Start => '-translate-y-12',
-                    VerticalAlignment::End => 'translate-y-12',
-                    default => null,
+            ($this instanceof \Filament\Notifications\Http\Livewire\Notifications)
+            ? match (static::$horizontalAlignment) {
+                'left' => '-translate-x-12',
+                'right' => 'translate-x-12',
+                'center' => match (static::$verticalAlignment) {
+                    'top' => '-translate-y-12',
+                    'bottom' => 'translate-y-12',
+                    'center' => null,
                 },
             }
             : null,
         ])
     "
-    :x-transition:leave-end="
-        \Illuminate\Support\Arr::toCssClasses([
-            'opacity-0',
-            'scale-95' => ! $isInline,
-        ])
-    "
+    x-transition:leave-end="scale-95 opacity-0"
     @class([
-        'fi-no-notification w-full overflow-hidden transition duration-300',
+        'w-full transition duration-300',
         ...match ($isInline) {
-            true => [
-                'fi-inline',
-            ],
+            true => [],
             false => [
-                'max-w-sm rounded-xl bg-white shadow-lg ring-1 dark:bg-gray-900',
+                'max-w-sm rounded-xl bg-white shadow-lg ring-1 dark:bg-gray-800',
                 match ($color) {
-                    'gray' => 'fi-color-gray ring-gray-950/5 dark:ring-white/10',
-                    default => 'fi-color-custom ring-custom-600/20 dark:ring-custom-400/30',
+                    'gray' => 'ring-gray-950/5 dark:ring-white/20',
+                    default => 'ring-custom-500/50',
                 },
             ],
         },
     ])
     @style([
-        \Filament\Support\get_color_css_variables(
-            $color,
-            shades: [50, 400, 600],
-        ) => ! ($isInline || $color === 'gray'),
+        \Filament\Support\get_color_css_variables($color, shades: [500]) => ! ($isInline || $color === 'gray'),
     ])
 >
     <div
         @class([
-            'flex w-full gap-3 p-4',
-            match ($color) {
-                'gray' => null,
-                default => 'bg-custom-50 dark:bg-custom-400/10',
+            'flex w-full gap-3',
+            ...match ($isInline) {
+                true => ['py-2 pe-2 ps-6'],
+                false => [
+                    'rounded-xl p-4',
+                    match ($color) {
+                        'gray' => null,
+                        default => 'bg-custom-500/10 dark:bg-custom-500/20',
+                    },
+                ],
             },
+        ])
+        @style([
+            \Filament\Support\get_color_css_variables($color, shades: [500]) => ! ($isInline || $color === 'gray'),
         ])
     >
         @if ($icon = $getIcon())
             <x-filament-notifications::icon
+                :name="$icon"
                 :color="$getIconColor()"
-                :icon="$icon"
                 :size="$getIconSize()"
             />
         @endif
 
-        <div class="mt-0.5 grid flex-1">
-            @if (filled($title = $getTitle()))
+        <div class="grid flex-1">
+            @if ($title = $getTitle())
                 <x-filament-notifications::title>
-                    {{ str($title)->sanitizeHtml()->toHtmlString() }}
+                    {{ str($title)->markdown()->sanitizeHtml()->toHtmlString() }}
                 </x-filament-notifications::title>
             @endif
 
-            @if (filled($date = $getDate()))
-                <x-filament-notifications::date class="mt-1">
+            @if ($date = $getDate())
+                <x-filament-notifications::date>
                     {{ $date }}
                 </x-filament-notifications::date>
             @endif
 
-            @if (filled($body = $getBody()))
-                <x-filament-notifications::body class="mt-1">
-                    {{ str($body)->sanitizeHtml()->toHtmlString() }}
+            @if ($body = $getBody())
+                <x-filament-notifications::body>
+                    {{ str($body)->markdown()->sanitizeHtml()->toHtmlString() }}
                 </x-filament-notifications::body>
             @endif
 
             @if ($actions = $getActions())
-                <x-filament-notifications::actions
-                    :actions="$actions"
-                    class="mt-3"
-                />
+                <x-filament-notifications::actions :actions="$actions" />
             @endif
         </div>
 

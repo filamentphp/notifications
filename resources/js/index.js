@@ -5,9 +5,9 @@ import {
     Notification,
 } from './Notification'
 
-window.FilamentNotificationAction = NotificationAction
-window.FilamentNotificationActionGroup = NotificationActionGroup
-window.FilamentNotification = Notification
+window.NotificationAction = NotificationAction
+window.NotificationActionGroup = NotificationActionGroup
+window.Notification = Notification
 
 document.addEventListener('alpine:init', () => {
     window.Alpine.plugin(NotificationComponentAlpinePlugin)

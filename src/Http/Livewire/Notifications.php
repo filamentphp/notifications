@@ -1,15 +1,12 @@
 <?php
 
-namespace Filament\Notifications\Livewire;
+namespace Filament\Notifications\Http\Livewire;
 
 use Filament\Notifications\Collection;
 use Filament\Notifications\Notification;
-use Filament\Support\Enums\Alignment;
-use Filament\Support\Enums\VerticalAlignment;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Notifications extends Component
@@ -19,11 +16,18 @@ class Notifications extends Component
 
     public Collection $notifications;
 
-    public static Alignment $alignment = Alignment::Right;
+    /**
+     * @var array<string, string>
+     */
+    protected $listeners = [
+        'notificationSent' => 'pushNotificationFromEvent',
+        'notificationsSent' => 'pullNotificationsFromSession',
+        'notificationClosed' => 'removeNotification',
+    ];
 
-    public static VerticalAlignment $verticalAlignment = VerticalAlignment::Start;
+    public static string $horizontalAlignment = 'right';
 
-    public static ?string $authGuard = null;
+    public static string $verticalAlignment = 'top';
 
     public function mount(): void
     {
@@ -31,7 +35,6 @@ class Notifications extends Component
         $this->pullNotificationsFromSession();
     }
 
-    #[On('notificationsSent')]
     public function pullNotificationsFromSession(): void
     {
         foreach (session()->pull('filament.notifications') ?? [] as $notification) {
@@ -44,7 +47,6 @@ class Notifications extends Component
     /**
      * @param  array<string, mixed>  $notification
      */
-    #[On('notificationSent')]
     public function pushNotificationFromEvent(array $notification): void
     {
         $notification = Notification::fromArray($notification);
@@ -52,7 +54,6 @@ class Notifications extends Component
         $this->pushNotification($notification);
     }
 
-    #[On('notificationClosed')]
     public function removeNotification(string $id): void
     {
         if (! $this->notifications->has($id)) {
@@ -84,7 +85,7 @@ class Notifications extends Component
 
     public function getUser(): Model | Authenticatable | null
     {
-        return auth(static::$authGuard)->user();
+        return auth()->user();
     }
 
     public function getBroadcastChannel(): ?string
@@ -104,19 +105,14 @@ class Notifications extends Component
         return "{$userClass}.{$user->getKey()}";
     }
 
-    public static function alignment(Alignment $alignment): void
+    public static function horizontalAlignment(string $alignment): void
     {
-        static::$alignment = $alignment;
+        static::$horizontalAlignment = $alignment;
     }
 
-    public static function verticalAlignment(VerticalAlignment $alignment): void
+    public static function verticalAlignment(string $alignment): void
     {
         static::$verticalAlignment = $alignment;
-    }
-
-    public static function authGuard(?string $guard): void
-    {
-        static::$authGuard = $guard;
     }
 
     public function render(): View

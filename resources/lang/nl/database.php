@@ -6,7 +6,7 @@ return [
 
         'heading' => 'Meldingen',
 
-        'actions' => [
+        'buttons' => [
 
             'clear' => [
                 'label' => 'Wissen',
@@ -20,7 +20,25 @@ return [
 
         'empty' => [
             'heading' => 'Geen meldingen',
-            'description' => 'Kijk later nog eens.',
+            'description' => 'Kijk later nog eens',
+        ],
+
+        'pagination' => [
+
+            'label' => 'Paginering navigatie',
+
+            'buttons' => [
+
+                'next' => [
+                    'label' => 'Volgende',
+                ],
+
+                'previous' => [
+                    'label' => 'Vorige',
+                ],
+
+            ],
+
         ],
 
     ],

@@ -12,7 +12,7 @@ Notifications are sent using a `Notification` object that's constructed through 
 ```php
 <?php
 
-namespace App\Livewire;
+namespace App\Http\Livewire;
 
 use Filament\Notifications\Notification;
 use Livewire\Component;
@@ -48,10 +48,12 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .send()
 ```
+
+Markdown text will automatically be rendered if passed to the title.
 
 ## Setting an icon
 
@@ -70,7 +72,7 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .icon('heroicon-o-document-text')
     .iconColor('success')
@@ -93,7 +95,7 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
     .send()
@@ -117,7 +119,7 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .color('success') // [tl! focus]
     .send()
@@ -142,7 +144,7 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
     .duration(5000)
@@ -164,7 +166,7 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
     .seconds(5)
@@ -186,7 +188,7 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
     .persistent()
@@ -195,7 +197,7 @@ new FilamentNotification()
 
 ## Setting body text
 
-Additional notification text can be shown in the `body()`:
+Additional notification text can be shown in the body. Similar to the title, it supports Markdown:
 
 ```php
 use Filament\Notifications\Notification;
@@ -203,17 +205,17 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the post have been saved.')
+    ->body('Changes to the **post** have been saved.')
     ->send();
 ```
 
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
-    .body('Changes to the post have been saved.')
+    .body('Changes to the **post** have been saved.')
     .send()
 ```
 
@@ -221,7 +223,7 @@ new FilamentNotification()
 
 ## Adding actions to notifications
 
-Notifications support [Actions](../actions/trigger-button), which are buttons that render below the content of the notification. They can open a URL or dispatch a Livewire event. Actions can be defined as follows:
+Notifications support [actions](../actions/trigger-button), which are buttons that render below the content of the notification. They can open a URL or emit a Livewire event. Actions can be defined as follows:
 
 ```php
 use Filament\Notifications\Actions\Action;
@@ -230,7 +232,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the post have been saved.')
+    ->body('Changes to the **post** have been saved.')
     ->actions([
         Action::make('view')
             ->button(),
@@ -243,14 +245,14 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
-    .body('Changes to the post have been saved.')
+    .body('Changes to the **post** have been saved.')
     .actions([
-        new FilamentNotificationAction('view')
+        new NotificationAction('view')
             .button(),
-        new FilamentNotificationAction('undo')
+        new NotificationAction('undo')
             .color('gray'),
     ])
     .send()
@@ -271,7 +273,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the post have been saved.')
+    ->body('Changes to the **post** have been saved.')
     ->actions([
         Action::make('view')
             ->button()
@@ -285,24 +287,24 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
-    .body('Changes to the post have been saved.')
+    .body('Changes to the **post** have been saved.')
     .actions([
-        new FilamentNotificationAction('view')
+        new NotificationAction('view')
             .button()
             .url('/view')
             .openUrlInNewTab(),
-        new FilamentNotificationAction('undo')
+        new NotificationAction('undo')
             .color('gray'),
     ])
     .send()
 ```
 
-### Dispatching Livewire events from notification actions
+### Emitting Livewire events from notification actions
 
-Sometimes you want to execute additional code when a notification action is clicked. This can be achieved by setting a Livewire event which should be dispatched on clicking the action. You may optionally pass an array of data, which will be available as parameters in the event listener on your Livewire component:
+Sometimes you want to execute additional code when a notification action is clicked. This can be achieved by setting a Livewire event which should be emitted on clicking the action. You may optionally pass an array of data, which will be available as parameters in the event listener on your Livewire component:
 
 ```php
 use Filament\Notifications\Actions\Action;
@@ -311,64 +313,72 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the post have been saved.')
+    ->body('Changes to the **post** have been saved.')
     ->actions([
         Action::make('view')
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true),
         Action::make('undo')
             ->color('gray')
-            ->dispatch('undoEditingPost', [$post->id]),
+            ->emit('undoEditingPost', [$post->id]),
     ])
     ->send();
 ```
 
-You can also `dispatchSelf` and `dispatchTo`:
+You can also `emitSelf`, `emitUp` and `emitTo`:
 
 ```php
 Action::make('undo')
     ->color('gray')
-    ->dispatchSelf('undoEditingPost', [$post->id])
+    ->emitSelf('undoEditingPost', [$post->id])
 
 Action::make('undo')
     ->color('gray')
-    ->dispatchTo('another_component', 'undoEditingPost', [$post->id])
+    ->emitUp('undoEditingPost', [$post->id])
+
+Action::make('undo')
+    ->color('gray')
+    ->emitTo('another_component', 'undoEditingPost', [$post->id])
 ```
 
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
-    .body('Changes to the post have been saved.')
+    .body('Changes to the **post** have been saved.')
     .actions([
-        new FilamentNotificationAction('view')
+        new NotificationAction('view')
             .button()
             .url('/view')
             .openUrlInNewTab(),
-        new FilamentNotificationAction('undo')
+        new NotificationAction('undo')
             .color('gray')
-            .dispatch('undoEditingPost'),
+            .emit('undoEditingPost'),
     ])
     .send()
 ```
 
-Similarly, `dispatchSelf` and `dispatchTo` are also available:
+Similarly, `emitSelf`, `emitUp` and `emitTo` are also available:
 
 ```js
-new FilamentNotificationAction('undo')
+new NotificationAction('undo')
     .color('gray')
-    .dispatchSelf('undoEditingPost')
+    .emitSelf('undoEditingPost')
 
-new FilamentNotificationAction('undo')
+new NotificationAction('undo')
     .color('gray')
-    .dispatchTo('another_component', 'undoEditingPost')
+    .emitUp('undoEditingPost')
+
+new NotificationAction('undo')
+    .color('gray')
+    .emitTo('another_component', 'undoEditingPost')
 ```
 
 ### Closing notifications from actions
 
-After opening a URL or dispatching an event from your action, you may want to close the notification right away:
+After opening a URL or emitting an event from your action, you may want to close the notification right away:
 
 ```php
 use Filament\Notifications\Actions\Action;
@@ -377,14 +387,14 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the post have been saved.')
+    ->body('Changes to the **post** have been saved.')
     ->actions([
         Action::make('view')
             ->button()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true),
         Action::make('undo')
             ->color('gray')
-            ->dispatch('undoEditingPost', [$post->id])
+            ->emit('undoEditingPost', [$post->id])
             ->close(),
     ])
     ->send();
@@ -393,18 +403,18 @@ Notification::make()
 Or with JavaScript:
 
 ```js
-new FilamentNotification()
+new Notification()
     .title('Saved successfully')
     .success()
-    .body('Changes to the post have been saved.')
+    .body('Changes to the **post** have been saved.')
     .actions([
-        new FilamentNotificationAction('view')
+        new NotificationAction('view')
             .button()
             .url('/view')
             .openUrlInNewTab(),
-        new FilamentNotificationAction('undo')
+        new NotificationAction('undo')
             .color('gray')
-            .dispatch('undoEditingPost')
+            .emit('undoEditingPost')
             .close(),
     ])
     .send()
@@ -412,7 +422,7 @@ new FilamentNotification()
 
 ## Using the JavaScript objects
 
-The JavaScript objects (`FilamentNotification` and `FilamentNotificationAction`) are assigned to `window.FilamentNotification` and `window.FilamentNotificationAction`, so they are available in on-page scripts.
+The JavaScript objects (`Notification` and `NotificationAction`) are assigned to `window.Notification` and `window.NotificationAction`, so they are available in on-page scripts.
 
 You may also import them in a bundled JavaScript file:
 

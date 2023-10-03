@@ -10,10 +10,6 @@
                 setTimeout(() => $wire.call('$refresh'), 500)
             })
         })
-
-        if (window.Echo) {
-            window.dispatchEvent(new CustomEvent('EchoLoaded'))
-        }
     "
     {{ $attributes }}
 ></div>

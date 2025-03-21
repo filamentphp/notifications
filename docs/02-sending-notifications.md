@@ -11,7 +11,7 @@ Notifications are sent using a `Notification` object that's constructed through 
 
 namespace App\Http\Livewire;
 
-use Filament\Notifications\Notification; // [tl! focus]
+use Filament\Notifications\Notification;
 use Livewire\Component;
 
 class EditPost extends Component
@@ -20,10 +20,10 @@ class EditPost extends Component
     {
         // ...
 
-        Notification::make() // [tl! focus:start]
+        Notification::make()
             ->title('Saved successfully')
             ->success()
-            ->send(); // [tl! focus:end]
+            ->send();
     }
 }
 ```
@@ -38,7 +38,7 @@ The main message of the notification is shown in the title. You can set the titl
 use Filament\Notifications\Notification;
 
 Notification::make()
-    ->title('Saved successfully') // [tl! focus]
+    ->title('Saved successfully')
     ->send();
 ```
 
@@ -46,7 +46,7 @@ Or with JavaScript:
 
 ```js
 new Notification()
-    .title('Saved successfully') // [tl! focus]
+    .title('Saved successfully')
     .send()
 ```
 
@@ -61,8 +61,8 @@ use Filament\Notifications\Notification;
 
 Notification::make()
     ->title('Saved successfully')
-    ->icon('heroicon-o-document-text') // [tl! focus:start]
-    ->iconColor('success') // [tl! focus:end]
+    ->icon('heroicon-o-document-text')
+    ->iconColor('success')
     ->send();
 ```
 
@@ -71,8 +71,8 @@ Or with JavaScript:
 ```js
 new Notification()
     .title('Saved successfully')
-    .icon('heroicon-o-document-text') // [tl! focus:start]
-    .iconColor('success') // [tl! focus:end]
+    .icon('heroicon-o-document-text')
+    .iconColor('success')
     .send()
 ```
 
@@ -85,7 +85,7 @@ use Filament\Notifications\Notification;
 
 Notification::make()
     ->title('Saved successfully')
-    ->success() // [tl! focus]
+    ->success()
     ->send();
 ```
 
@@ -94,7 +94,7 @@ Or with JavaScript:
 ```js
 new Notification()
     .title('Saved successfully')
-    .success() // [tl! focus]
+    .success()
     .send()
 ```
 
@@ -110,7 +110,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->duration(5000) // [tl! focus]
+    ->duration(5000)
     ->send();
 ```
 
@@ -120,7 +120,7 @@ Or with JavaScript:
 new Notification()
     .title('Saved successfully')
     .success()
-    .duration(5000) // [tl! focus]
+    .duration(5000)
     .send()
 ```
 
@@ -132,7 +132,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->seconds(5) // [tl! focus]
+    ->seconds(5)
     ->send();
 ```
 
@@ -142,7 +142,7 @@ Or with JavaScript:
 new Notification()
     .title('Saved successfully')
     .success()
-    .seconds(5) // [tl! focus]
+    .seconds(5)
     .send()
 ```
 
@@ -154,7 +154,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->persistent() // [tl! focus]
+    ->persistent()
     ->send();
 ```
 
@@ -164,7 +164,7 @@ Or with JavaScript:
 new Notification()
     .title('Saved successfully')
     .success()
-    .persistent() // [tl! focus]
+    .persistent()
     .send()
 ```
 
@@ -178,40 +178,7 @@ use Filament\Notifications\Notification;
 Notification::make()
     ->title('Saved successfully')
     ->success()
-    ->body('Changes to the **post** have been saved.') // [tl! focus]
-    ->send();
-```
-
-Or with JavaScript:
-
-```js
-new Notification()
-    .title('Saved successfully')
-    .success()
-    .body('Changes to the **post** have been saved.') // [tl! focus]
-    .send()
-```
-
-![Notification with Markdown body](https://user-images.githubusercontent.com/44533235/180995813-ce93e747-0f66-4fc5-becb-7e535fb80e46.png)
-
-## Actions
-
-Notifications support actions that render a button or link which may open a URL or emit a Livewire event. Actions will render as link by default, but you may configure it to render a button using the `button()` method. Actions can be defined as follows:
-
-```php
-use Filament\Notifications\Actions\Action; // [tl! focus]
-use Filament\Notifications\Notification;
-
-Notification::make()
-    ->title('Saved successfully')
-    ->success()
     ->body('Changes to the **post** have been saved.')
-    ->actions([ // [tl! focus:start]
-        Action::make('view')
-            ->button(),
-        Action::make('undo')
-            ->color('secondary'),
-    ]) // [tl! focus:end]
     ->send();
 ```
 
@@ -222,12 +189,45 @@ new Notification()
     .title('Saved successfully')
     .success()
     .body('Changes to the **post** have been saved.')
-    .actions([ // [tl! focus:start]
+    .send()
+```
+
+![Notification with Markdown body](https://user-images.githubusercontent.com/44533235/180995813-ce93e747-0f66-4fc5-becb-7e535fb80e46.png)
+
+## Actions
+
+Notifications support actions that render a button or link which may open a URL or emit a Livewire event. Actions will render as link by default, but you may configure it to render a button using the `button()` method. Actions can be defined as follows:
+
+```php
+use Filament\Notifications\Actions\Action;
+use Filament\Notifications\Notification;
+
+Notification::make()
+    ->title('Saved successfully')
+    ->success()
+    ->body('Changes to the **post** have been saved.')
+    ->actions([
+        Action::make('view')
+            ->button(),
+        Action::make('undo')
+            ->color('secondary'),
+    ])
+    ->send();
+```
+
+Or with JavaScript:
+
+```js
+new Notification()
+    .title('Saved successfully')
+    .success()
+    .body('Changes to the **post** have been saved.')
+    .actions([
         new NotificationAction('view')
             .button(),
         new NotificationAction('undo')
             .color('secondary'),
-    ]) // [tl! focus:end]
+    ])
     .send()
 ```
 
@@ -248,7 +248,7 @@ Notification::make()
     ->actions([
         Action::make('view')
             ->button()
-            ->url(route('posts.show', $post), shouldOpenInNewTab: true) // [tl! focus]
+            ->url(route('posts.show', $post), shouldOpenInNewTab: true)
         Action::make('undo')
             ->color('secondary'),
     ])
@@ -265,8 +265,8 @@ new Notification()
     .actions([
         new NotificationAction('view')
             .button()
-            .url('/view') // [tl! focus:start]
-            .openUrlInNewTab(), // [tl! focus:end]
+            .url('/view')
+            .openUrlInNewTab(),
         new NotificationAction('undo')
             .color('secondary'),
     ])
@@ -291,7 +291,7 @@ Notification::make()
             ->url(route('posts.show', $post), shouldOpenInNewTab: true),
         Action::make('undo')
             ->color('secondary')
-            ->emit('undoEditingPost', [$post->id]), // [tl! focus]
+            ->emit('undoEditingPost', [$post->id]),
     ])
     ->send();
 ```
@@ -301,15 +301,15 @@ You can also `emitSelf`, `emitUp` and `emitTo`:
 ```php
 Action::make('undo')
     ->color('secondary')
-    ->emitSelf('undoEditingPost', [$post->id]) // [tl! focus]
+    ->emitSelf('undoEditingPost', [$post->id])
     
 Action::make('undo')
     ->color('secondary')
-    ->emitUp('undoEditingPost', [$post->id]) // [tl! focus]
+    ->emitUp('undoEditingPost', [$post->id])
     
 Action::make('undo')
     ->color('secondary')
-    ->emitTo('another_component', 'undoEditingPost', [$post->id]) // [tl! focus]
+    ->emitTo('another_component', 'undoEditingPost', [$post->id])
 ```
 
 Or with JavaScript:
@@ -326,7 +326,7 @@ new Notification()
             .openUrlInNewTab(),
         new NotificationAction('undo')
             .color('secondary')
-            .emit('undoEditingPost'), // [tl! focus]
+            .emit('undoEditingPost'),
     ])
     .send()
 ```
@@ -336,15 +336,15 @@ Similarly, `emitSelf`, `emitUp` and `emitTo` are also available:
 ```js
 new NotificationAction('undo')
     .color('secondary')
-    .emitSelf('undoEditingPost') // [tl! focus]
+    .emitSelf('undoEditingPost')
 
 new NotificationAction('undo')
     .color('secondary')
-    .emitUp('undoEditingPost') // [tl! focus]
+    .emitUp('undoEditingPost')
 
 new NotificationAction('undo')
     .color('secondary')
-    .emitTo('another_component', 'undoEditingPost') // [tl! focus]
+    .emitTo('another_component', 'undoEditingPost')
 ```
 ### Closing notifications
 
@@ -365,7 +365,7 @@ Notification::make()
         Action::make('undo')
             ->color('secondary')
             ->emit('undoEditingPost', [$post->id])
-            ->close(), // [tl! focus]
+            ->close(),
     ])
     ->send();
 ```
@@ -385,7 +385,7 @@ new Notification()
         new NotificationAction('undo')
             .color('secondary')
             .emit('undoEditingPost')
-            .close(), // [tl! focus]
+            .close(),
     ])
     .send()
 ```

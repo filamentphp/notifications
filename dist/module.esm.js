@@ -182,17 +182,21 @@ function stopObservingMutations() {
   observer.disconnect();
   currentlyObserving = false;
 }
-var queuedMutations = [];
+var recordQueue = [];
+var willProcessRecordQueue = false;
 function flushObserver() {
-  let records = observer.takeRecords();
-  queuedMutations.push(() => records.length > 0 && onMutate(records));
-  let queueLengthWhenTriggered = queuedMutations.length;
-  queueMicrotask(() => {
-    if (queuedMutations.length === queueLengthWhenTriggered) {
-      while (queuedMutations.length > 0)
-        queuedMutations.shift()();
-    }
-  });
+  recordQueue = recordQueue.concat(observer.takeRecords());
+  if (recordQueue.length && !willProcessRecordQueue) {
+    willProcessRecordQueue = true;
+    queueMicrotask(() => {
+      processRecordQueue();
+      willProcessRecordQueue = false;
+    });
+  }
+}
+function processRecordQueue() {
+  onMutate(recordQueue);
+  recordQueue.length = 0;
 }
 function mutateDom(callback) {
   if (!currentlyObserving)
@@ -210,31 +214,15 @@ function onMutate(mutations) {
     return;
   }
   let addedNodes = [];
-  let removedNodes = new Set();
+  let removedNodes = [];
   let addedAttributes = new Map();
   let removedAttributes = new Map();
   for (let i = 0; i < mutations.length; i++) {
     if (mutations[i].target._x_ignoreMutationObserver)
       continue;
     if (mutations[i].type === "childList") {
-      mutations[i].removedNodes.forEach((node) => {
-        if (node.nodeType !== 1)
-          return;
-        if (!node._x_marker)
-          return;
-        removedNodes.add(node);
-      });
-      mutations[i].addedNodes.forEach((node) => {
-        if (node.nodeType !== 1)
-          return;
-        if (removedNodes.has(node)) {
-          removedNodes.delete(node);
-          return;
-        }
-        if (node._x_marker)
-          return;
-        addedNodes.push(node);
-      });
+      mutations[i].addedNodes.forEach((node) => node.nodeType === 1 && addedNodes.push(node));
+      mutations[i].removedNodes.forEach((node) => node.nodeType === 1 && removedNodes.push(node));
     }
     if (mutations[i].type === "attributes") {
       let el = mutations[i].target;
@@ -267,15 +255,33 @@ function onMutate(mutations) {
     onAttributeAddeds.forEach((i) => i(el, attrs));
   });
   for (let node of removedNodes) {
-    if (addedNodes.some((i) => i.contains(node)))
+    if (addedNodes.includes(node))
       continue;
     onElRemoveds.forEach((i) => i(node));
+    if (node._x_cleanups) {
+      while (node._x_cleanups.length)
+        node._x_cleanups.pop()();
+    }
   }
+  addedNodes.forEach((node) => {
+    node._x_ignoreSelf = true;
+    node._x_ignore = true;
+  });
   for (let node of addedNodes) {
+    if (removedNodes.includes(node))
+      continue;
     if (!node.isConnected)
       continue;
+    delete node._x_ignoreSelf;
+    delete node._x_ignore;
     onElAddeds.forEach((i) => i(node));
+    node._x_ignore = true;
+    node._x_ignoreSelf = true;
   }
+  addedNodes.forEach((node) => {
+    delete node._x_ignoreSelf;
+    delete node._x_ignore;
+  });
   addedNodes = null;
   removedNodes = null;
   addedAttributes = null;

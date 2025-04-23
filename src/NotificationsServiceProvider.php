@@ -36,7 +36,7 @@ class NotificationsServiceProvider extends PackageServiceProvider
 
         Livewire::component('notifications', Notifications::class);
 
-        on('dehydrate', function (Component $component): void {
+        on('dehydrate', function (Component $component) {
             if (! Livewire::isLivewireRequest()) {
                 return;
             }

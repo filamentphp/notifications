@@ -1,10 +1,9 @@
 ---
 title: Database notifications
 ---
-import Aside from "@components/Aside.astro"
 import AutoScreenshot from "@components/AutoScreenshot.astro"
 
-<AutoScreenshot name="notifications/database" alt="Database notifications" version="4.x" />
+<AutoScreenshot name="notifications/database" alt="Database notifications" version="3.x" />
 
 ## Setting up the notifications database table
 
@@ -22,9 +21,39 @@ php artisan notifications:table
 
 > If you're using UUIDs for your `User` model, make sure that your `notifiable` column is using `uuidMorphs()`: `$table->uuidMorphs('notifiable')`.
 
-## Enabling database notifications in a panel
+## Rendering the database notifications modal
 
-If you'd like to receive database notifications in a panel, you can enable them in the [configuration](../panel-configuration):
+> If you want to add database notifications to a panel, [follow this part of the guide](#adding-the-database-notifications-modal-to-a-panel).
+
+If you'd like to render the database notifications modal outside of the [Panel Builder](../panels), you'll need to add a new Livewire component to your Blade layout:
+
+```blade
+@livewire('database-notifications')
+```
+
+To open the modal, you must have a "trigger" button in your view. Create a new trigger button component in your app, for instance at `/resources/views/filament/notifications/database-notifications-trigger.blade.php`:
+
+```blade
+<button type="button">
+    Notifications ({{ $unreadNotificationsCount }} unread)
+</button>
+```
+
+`$unreadNotificationsCount` is a variable automatically passed to this view, which provides it with a real-time count of unread notifications the user has.
+
+In the service provider, point to this new trigger view:
+
+```php
+use Filament\Notifications\Livewire\DatabaseNotifications;
+
+DatabaseNotifications::trigger('filament.notifications.database-notifications-trigger');
+```
+
+Now, click on the trigger button that is rendered in your view. A modal should appear containing your database notifications when clicked!
+
+### Adding the database notifications modal to a panel
+
+You can enable database notifications in a panel's [configuration](../panels/configuration):
 
 ```php
 use Filament\Panel;
@@ -36,6 +65,8 @@ public function panel(Panel $panel): Panel
         ->databaseNotifications();
 }
 ```
+
+To learn more, visit the [Panel Builder documentation](../panels/notifications).
 
 ## Sending database notifications
 
@@ -94,34 +125,22 @@ Polling is the practice of periodically making a request to the server to check 
 By default, Livewire polls for new notifications every 30 seconds:
 
 ```php
-use Filament\Panel;
+use Filament\Notifications\Livewire\DatabaseNotifications;
 
-public function panel(Panel $panel): Panel
-{
-    return $panel
-        // ...
-        ->databaseNotifications()
-        ->databaseNotificationsPolling('30s');
-}
+DatabaseNotifications::pollingInterval('30s');
 ```
 
 You may completely disable polling if you wish:
 
 ```php
-use Filament\Panel;
+use Filament\Notifications\Livewire\DatabaseNotifications;
 
-public function panel(Panel $panel): Panel
-{
-    return $panel
-        // ...
-        ->databaseNotifications()
-        ->databaseNotificationsPolling(null);
-}
+DatabaseNotifications::pollingInterval(null);
 ```
 
 ### Using Echo to receive new database notifications with websockets
 
-Websockets are a more efficient way to receive new notifications in real-time. To set up websockets, you must [configure it](broadcast-notifications#setting-up-websockets-in-a-panel) in the panel first.
+Alternatively, the package has a native integration with [Laravel Echo](https://laravel.com/docs/broadcasting#client-side-installation). Make sure Echo is installed, as well as a [server-side websockets integration](https://laravel.com/docs/broadcasting#server-side-installation) like Pusher.
 
 Once websockets are set up, you can automatically dispatch a `DatabaseNotificationsSent` event by setting the `isEventDispatched` parameter to `true` when sending the notification. This will trigger the immediate fetching of new notifications for the user:
 
@@ -137,10 +156,10 @@ Notification::make()
 
 ## Marking database notifications as read
 
-There is a button at the top of the modal to mark all notifications as read at once. You may also add [Actions](overview#adding-actions-to-notifications) to notifications, which you can use to mark individual notifications as read. To do this, use the `markAsRead()` method on the action:
+There is a button at the top of the modal to mark all notifications as read at once. You may also add [Actions](sending-notifications#adding-actions-to-notifications) to notifications, which you can use to mark individual notifications as read. To do this, use the `markAsRead()` method on the action:
 
 ```php
-use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 Notification::make()
@@ -158,7 +177,7 @@ Notification::make()
 Alternatively, you may use the `markAsUnread()` method to mark a notification as unread:
 
 ```php
-use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 Notification::make()
@@ -175,7 +194,7 @@ Notification::make()
 
 ## Opening the database notifications modal
 
-You can open the database notifications modal from anywhere by dispatching an `open-modal` browser event:
+Instead of rendering the trigger button as described above, you can always open the database notifications modal from anywhere by dispatching an `open-modal` browser event:
 
 ```blade
 <button

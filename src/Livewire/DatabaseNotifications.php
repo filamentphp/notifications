@@ -3,12 +3,7 @@
 namespace Filament\Notifications\Livewire;
 
 use Carbon\CarbonInterface;
-use Filament\Actions\Action;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Contracts\HasActions;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Concerns\InteractsWithSchemas;
-use Filament\Schemas\Contracts\HasSchemas;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\View\View;
@@ -21,10 +16,8 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class DatabaseNotifications extends Component implements HasActions, HasSchemas
+class DatabaseNotifications extends Component
 {
-    use InteractsWithActions;
-    use InteractsWithSchemas;
     use WithPagination;
 
     public static bool $isPaginated = true;
@@ -120,26 +113,6 @@ class DatabaseNotifications extends Component implements HasActions, HasSchemas
         return view($viewPath);
     }
 
-    public function markAllNotificationsAsReadAction(): Action
-    {
-        return Action::make('markAllNotificationsAsRead')
-            ->link()
-            ->label(__('filament-notifications::database.modal.actions.mark_all_as_read.label'))
-            ->extraAttributes(['tabindex' => '-1'])
-            ->action('markAllNotificationsAsRead');
-    }
-
-    public function clearNotificationsAction(): Action
-    {
-        return Action::make('clearNotifications')
-            ->link()
-            ->color('danger')
-            ->label(__('filament-notifications::database.modal.actions.clear.label'))
-            ->extraAttributes(['tabindex' => '-1'])
-            ->action('clearNotifications')
-            ->close();
-    }
-
     public function getUser(): Model | Authenticatable | null
     {
         return auth(static::$authGuard)->user();
@@ -199,10 +172,5 @@ class DatabaseNotifications extends Component implements HasActions, HasSchemas
     public function render(): View
     {
         return view('filament-notifications::database-notifications');
-    }
-
-    public function placeholder(): string
-    {
-        return '<div>' . $this->getTrigger()?->with(['unreadNotificationsCount' => $this->getUnreadNotificationsCount()])->render() . '</div>';
     }
 }

@@ -2,24 +2,22 @@
 
 namespace Filament\Notifications\Concerns;
 
-use BackedEnum;
 use Filament\Support\Concerns\HasIcon as BaseTrait;
 use Filament\Support\Facades\FilamentIcon;
-use Filament\Support\Icons\Heroicon;
 
 trait HasIcon
 {
     use BaseTrait {
-        getIcon as getBaseIcon;
+        getIcon as baseGetIcon;
     }
 
-    public function getIcon(): string | BackedEnum | null
+    public function getIcon(): ?string
     {
-        return $this->getBaseIcon() ?? match ($this->getStatus()) {
-            'danger' => FilamentIcon::resolve('notifications::notification.danger') ?? Heroicon::OutlinedXCircle,
-            'info' => FilamentIcon::resolve('notifications::notification.info') ?? Heroicon::OutlinedInformationCircle,
-            'success' => FilamentIcon::resolve('notifications::notification.success') ?? Heroicon::OutlinedCheckCircle,
-            'warning' => FilamentIcon::resolve('notifications::notification.warning') ?? Heroicon::OutlinedExclamationCircle,
+        return $this->baseGetIcon() ?? match ($this->getStatus()) {
+            'danger' => FilamentIcon::resolve('notifications::notification.danger') ?? 'heroicon-o-x-circle',
+            'info' => FilamentIcon::resolve('notifications::notification.info') ?? 'heroicon-o-information-circle',
+            'success' => FilamentIcon::resolve('notifications::notification.success') ?? 'heroicon-o-check-circle',
+            'warning' => FilamentIcon::resolve('notifications::notification.warning') ?? 'heroicon-o-exclamation-circle',
             default => null,
         };
     }

@@ -1,9 +1,11 @@
 ---
-title: Overview
+title: Sending notifications
 ---
 import AutoScreenshot from "@components/AutoScreenshot.astro"
 
-## Introduction
+## Overview
+
+> To start, make sure the package is [installed](installation) - `@livewire('notifications')` should be in your Blade layout somewhere.
 
 Notifications are sent using a `Notification` object that's constructed through a fluent API. Calling the `send()` method on the `Notification` object will dispatch the notification and display it in your application. As the session is used to flash notifications, they can be sent from anywhere in your code, including JavaScript, not just Livewire components.
 
@@ -29,7 +31,7 @@ class EditPost extends Component
 }
 ```
 
-<AutoScreenshot name="notifications/success" alt="Success notification" version="4.x" />
+<AutoScreenshot name="notifications/success" alt="Success notification" version="3.x" />
 
 ## Setting a title
 
@@ -55,7 +57,7 @@ new FilamentNotification()
 
 ## Setting an icon
 
-Optionally, a notification can have an [icon](../styling/icons) that's displayed in front of its content. You may also set a color for the icon, which is gray by default:
+Optionally, a notification can have an [icon](https://blade-ui-kit.com/blade-icons?set=1#search) that's displayed in front of its content. You may also set a color for the icon, which is gray by default:
 
 ```php
 use Filament\Notifications\Notification;
@@ -77,9 +79,9 @@ new FilamentNotification()
     .send()
 ```
 
-<AutoScreenshot name="notifications/icon" alt="Notification with icon" version="4.x" />
+<AutoScreenshot name="notifications/icon" alt="Notification with icon" version="3.x" />
 
-Notifications often have a status like `success`, `warning`, `danger` or `info`. Instead of manually setting the corresponding [icons](../styling/icons) and [colors](../styling/colors), there's a `status()` method which you can pass the status. You may also use the dedicated `success()`, `warning()`, `danger()` and `info()` methods instead. So, cleaning up the above example would look like this:
+Notifications often have a status like `success`, `warning`, `danger` or `info`. Instead of manually setting the corresponding icons and colors, there's a `status()` method which you can pass the status. You may also use the dedicated `success()`, `warning()`, `danger()` and `info()` methods instead. So, cleaning up the above example would look like this:
 
 ```php
 use Filament\Notifications\Notification;
@@ -99,7 +101,7 @@ new FilamentNotification()
     .send()
 ```
 
-<AutoScreenshot name="notifications/statuses" alt="Notifications with various statuses" version="4.x" />
+<AutoScreenshot name="notifications/statuses" alt="Notifications with various statuses" version="3.x" />
 
 ## Setting a background color
 
@@ -123,7 +125,7 @@ new FilamentNotification()
     .send()
 ```
 
-<AutoScreenshot name="notifications/color" alt="Notification with background color" version="4.x" />
+<AutoScreenshot name="notifications/color" alt="Notification with background color" version="3.x" />
 
 ## Setting a duration
 
@@ -219,14 +221,14 @@ new FilamentNotification()
     .send()
 ```
 
-<AutoScreenshot name="notifications/body" alt="Notification with body text" version="4.x" />
+<AutoScreenshot name="notifications/body" alt="Notification with body text" version="3.x" />
 
 ## Adding actions to notifications
 
-Notifications support [Actions](../actions/overview), which are buttons that render below the content of the notification. They can open a URL or dispatch a Livewire event. Actions can be defined as follows:
+Notifications support [Actions](../actions/trigger-button), which are buttons that render below the content of the notification. They can open a URL or dispatch a Livewire event. Actions can be defined as follows:
 
 ```php
-use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 Notification::make()
@@ -258,16 +260,16 @@ new FilamentNotification()
     .send()
 ```
 
-<AutoScreenshot name="notifications/actions" alt="Notification with actions" version="4.x" />
+<AutoScreenshot name="notifications/actions" alt="Notification with actions" version="3.x" />
 
-You can learn more about how to style action buttons [here](../actions/overview).
+You can learn more about how to style action buttons [here](../actions/trigger-button).
 
 ### Opening URLs from notification actions
 
 You can open a URL, optionally in a new tab, when clicking on an action:
 
 ```php
-use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 Notification::make()
@@ -307,7 +309,7 @@ new FilamentNotification()
 Sometimes you want to execute additional code when a notification action is clicked. This can be achieved by setting a Livewire event which should be dispatched on clicking the action. You may optionally pass an array of data, which will be available as parameters in the event listener on your Livewire component:
 
 ```php
-use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 Notification::make()
@@ -373,7 +375,7 @@ new FilamentNotificationAction('undo')
 After opening a URL or dispatching an event from your action, you may want to close the notification right away:
 
 ```php
-use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 Notification::make()
@@ -475,16 +477,3 @@ In this case, you can close the notification by dispatching the event with the c
 ```
 
 Please be aware that if you send multiple notifications with the same ID, you may experience unexpected side effects, so random IDs are recommended.
-
-## Positioning notifications
-
-You can configure the alignment of the notifications in a service provider or middleware, by calling `Notifications::alignment()` and `Notifications::verticalAlignment()`. You can pass `Alignment::Start`, `Alignment::Center`, `Alignment::End`, `VerticalAlignment::Start`, `VerticalAlignment::Center` or `VerticalAlignment::End`:
-
-```php
-use Filament\Notifications\Livewire\Notifications;
-use Filament\Support\Enums\Alignment;
-use Filament\Support\Enums\VerticalAlignment;
-
-Notifications::alignment(Alignment::Start);
-Notifications::verticalAlignment(VerticalAlignment::End);
-```

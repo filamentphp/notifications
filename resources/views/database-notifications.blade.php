@@ -1,6 +1,7 @@
 @php
     use Filament\Support\Enums\Alignment;
     use Filament\Support\View\Components\BadgeComponent;
+    use Illuminate\View\ComponentAttributeBag;
 
     $notifications = $this->getNotifications();
     $unreadNotificationsCount = $this->getUnreadNotificationsCount();
@@ -42,10 +43,11 @@
 
                         @if ($unreadNotificationsCount)
                             <span
-                                @class([
-                                    'fi-badge fi-size-xs',
-                                    ...\Filament\Support\get_component_color_classes(BadgeComponent::class, 'primary'),
-                                ])
+                                {{
+                                    (new ComponentAttributeBag)->color(BadgeComponent::class, 'primary')->class([
+                                        'fi-badge fi-size-xs',
+                                    ])
+                                }}
                             >
                                 {{ $unreadNotificationsCount }}
                             </span>

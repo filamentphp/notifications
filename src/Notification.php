@@ -125,7 +125,7 @@ class Notification extends ViewComponent implements Arrayable, HasEmbeddedView
 
         $view = $data['view'] ?? null;
 
-        if (filled($view) && ($static->getView() !== $view) && $static->isViewSafe($view)) {
+        if (filled($view) && ((! $static->hasView()) || ($static->getView() !== $view)) && $static->isViewSafe($view)) {
             $static->view($data['view']);
         }
 

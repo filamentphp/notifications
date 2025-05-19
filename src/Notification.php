@@ -12,6 +12,7 @@ use Filament\Notifications\View\Components\NotificationComponent\IconComponent;
 use Filament\Support\Components\Contracts\HasEmbeddedView;
 use Filament\Support\Components\ViewComponent;
 use Filament\Support\Concerns\HasColor;
+use Filament\Support\Concerns\HasIconSize;
 use Filament\Support\Contracts\ScalableIcon;
 use Filament\Support\Enums\IconSize;
 use Filament\Support\Icons\Heroicon;
@@ -42,6 +43,7 @@ class Notification extends ViewComponent implements Arrayable, HasEmbeddedView
     use Concerns\HasStatus;
     use Concerns\HasTitle;
     use HasColor;
+    use HasIconSize;
 
     protected string $viewIdentifier = 'notification';
 

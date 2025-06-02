@@ -9,7 +9,6 @@
     },
     "require": {
         "php": "^8.2",
-        "php": "^8.2",
         "filament/actions": "self.version",
         "filament/support": "self.version"
     },

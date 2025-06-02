@@ -65,14 +65,6 @@ class Notification extends ViewComponent implements Arrayable, HasEmbeddedView
         return $static;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function getViewData(): array
-    {
-        return $this->viewData;
-    }
-
     public function toArray(): array
     {
         $icon = $this->getIcon();

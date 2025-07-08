@@ -3,7 +3,7 @@
 ])
 
 <div
-    x-data="notificationComponent({ notification: @js($notification) })"
+    x-data="notificationComponent({ notification: @js($notification->toArray()) })"
     {{
         $attributes
             ->merge([

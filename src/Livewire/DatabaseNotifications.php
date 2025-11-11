@@ -82,8 +82,14 @@ class DatabaseNotifications extends Component
 
     public function getNotificationsQuery(): Builder | Relation
     {
+        $user = $this->getUser();
+
+        if (! $user) {
+            abort(401);
+        }
+
         /** @phpstan-ignore-next-line */
-        return $this->getUser()->notifications()->where('data->format', 'filament');
+        return $user->notifications()->where('data->format', 'filament');
     }
 
     public function getUnreadNotificationsQuery(): Builder | Relation

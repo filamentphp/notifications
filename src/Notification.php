@@ -261,7 +261,11 @@ class Notification extends ViewComponent implements Arrayable, HasEmbeddedView
         }
 
         if ($notification instanceof Notification) {
-            $expectedNotification = $notifications->first(fn (Notification $mountedNotification, string $key): bool => $mountedNotification->id === $key);
+            $expectedNotificationArray = collect($notification->toArray())->except(['id'])->toArray();
+
+            $expectedNotification = $notifications->first(
+                fn (Notification $mountedNotification): bool => collect($mountedNotification->toArray())->except(['id'])->toArray() === $expectedNotificationArray,
+            );
         }
 
         if (blank($notification)) {
@@ -302,7 +306,11 @@ class Notification extends ViewComponent implements Arrayable, HasEmbeddedView
         }
 
         if ($notification instanceof Notification) {
-            $expectedNotification = $notifications->first(fn (Notification $mountedNotification, string $key): bool => $mountedNotification->id === $key);
+            $expectedNotificationArray = collect($notification->toArray())->except(['id'])->toArray();
+
+            $expectedNotification = $notifications->first(
+                fn (Notification $mountedNotification): bool => collect($mountedNotification->toArray())->except(['id'])->toArray() === $expectedNotificationArray,
+            );
         }
 
         if (blank($notification)) {
@@ -342,9 +350,16 @@ class Notification extends ViewComponent implements Arrayable, HasEmbeddedView
         $hasDate = filled($date);
         $body = $this->getBody();
         $hasBody = filled($body);
+        $closeButtonLabel = __('filament-notifications::notification.actions.close.label');
 
         $attributes = (new FilamentComponentAttributeBag)
             ->merge([
+                // `danger` toasts convey errors, so they get an assertive live region
+                // (`role="alert"`) to interrupt; other statuses inherit the polite
+                // `role="status"` container. Inline notifications (e.g. rendered into the
+                // database-notifications modal) are excluded, otherwise opening the panel
+                // would replay every stored danger notification as an assertive burst.
+                'role' => ($status === 'danger' && ! $this->isInline) ? 'alert' : null,
                 'wire:key' => "{$this->getId()}.notifications.{$this->getId()}",
                 'x-on:close-notification.window' => "if (\$event.detail.id == '{$this->getId()}') close()",
             ], escape: false)
@@ -409,6 +424,8 @@ class Notification extends ViewComponent implements Arrayable, HasEmbeddedView
             <button
                 type="button"
                 x-on:click="close"
+                aria-label="<?= e($closeButtonLabel) ?>"
+                title="<?= e($closeButtonLabel) ?>"
                 class="fi-icon-btn fi-no-notification-close-btn"
             >
                 <?= generate_icon_html(Heroicon::XMark, alias: NotificationsIconAlias::NOTIFICATION_CLOSE_BUTTON)->toHtml() ?>

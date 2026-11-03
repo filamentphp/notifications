@@ -6,6 +6,7 @@ const batchPattern = /^[a-f0-9]{40}$/
 
 let generation = 0
 let navigating = false
+let hasNavigated = false
 let scheduled = false
 let wake = 0
 let handledWake = 0
@@ -96,7 +97,7 @@ function schedule() {
         flight = attempt
 
         try {
-            host.$wire.pullNotificationsFromSession(eligible).then(
+            host.$wire.pullNotifications(eligible).then(
                 () => settle(attempt),
                 () => settle(attempt),
             )
@@ -232,13 +233,14 @@ export function setUpNotifications() {
     })
 
     document.addEventListener('livewire:navigated', () => {
+        if (hasNavigated) wake++
+        hasNavigated = true
         navigating = false
 
         for (const receipt of batches.values()) {
             if (receipt.redirect) receipt.ready = true
         }
 
-        wake++
         schedule()
     })
 }
@@ -250,7 +252,12 @@ export default function notificationsComponent() {
         init() {
             host = this
             hosts.add(host)
-            wake++
+            if (
+                hasNavigated ||
+                this.$el.dataset.filamentNotifications !== 'mounted'
+            ) {
+                wake++
+            }
             schedule()
         },
 

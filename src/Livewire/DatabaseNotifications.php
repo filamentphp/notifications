@@ -57,6 +57,16 @@ class DatabaseNotifications extends Component implements HasActions, HasSchemas
             ->delete();
     }
 
+    /** @param array<string> $ids */
+    #[Exposed]
+    #[On('notificationsClosed')]
+    public function removeNotifications(array $ids): void
+    {
+        foreach ($ids as $id) {
+            $this->removeNotification($id);
+        }
+    }
+
     #[Exposed]
     #[On('markedNotificationAsRead')]
     public function markNotificationAsRead(string $id): void
@@ -144,6 +154,9 @@ class DatabaseNotifications extends Component implements HasActions, HasSchemas
         return static::$pollingInterval;
     }
 
+    /**
+     * @internal Never call or override this method. It is not part of the public API and may change in minor and patch releases.
+     */
     #[Unexposed]
     public function getTrigger(): ?View
     {
@@ -246,8 +259,10 @@ class DatabaseNotifications extends Component implements HasActions, HasSchemas
     }
 
     #[Unexposed]
-    public function placeholder(): string
+    public function placeholder(): View | string
     {
-        return '<div>' . $this->getTrigger()?->with(['unreadNotificationsCount' => $this->getUnreadNotificationsCount()])->render() . '</div>';
+        return view('filament-notifications::database-notifications-placeholder', [
+            'trigger' => $this->getTrigger()?->with(['unreadNotificationsCount' => $this->getUnreadNotificationsCount()]),
+        ]);
     }
 }
